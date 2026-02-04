@@ -1,0 +1,213 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Montserrat:wght@300;400;500;600;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Estilos base para BellasGlamour - High Fashion */
+@layer base {
+  body {
+    @apply bg-jet-black text-platinum font-montserrat antialiased;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-playfair;
+  }
+  
+  /* Scrollbar personalizada */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    @apply bg-dark-gray;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    @apply bg-deep-magenta rounded-full;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-opacity-80;
+  }
+}
+
+@layer components {
+  /* Botones de lujo */
+  .btn-luxury {
+    @apply relative overflow-hidden bg-deep-magenta text-platinum px-8 py-3 rounded-sm 
+           font-montserrat font-medium tracking-wide transition-all duration-300 
+           hover:bg-opacity-90 hover:scale-105 active:scale-95
+           focus:outline-none focus:ring-2 focus:ring-deep-magenta focus:ring-opacity-50;
+  }
+  
+  .btn-luxury::before {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent 
+           opacity-0 hover:opacity-20 transition-opacity duration-300 transform -skew-x-12;
+  }
+  
+  /* Cards de modelos */
+  .model-card {
+    @apply relative overflow-hidden bg-dark-gray rounded-sm border border-medium-gray 
+           transition-all duration-300 hover:border-deep-magenta hover:shadow-lg
+           hover:shadow-deep-magenta/20 hover:scale-105;
+  }
+  
+  .model-card-overlay {
+    @apply absolute inset-0 bg-gradient-to-t from-jet-black via-transparent to-transparent 
+           opacity-60 transition-opacity duration-300;
+  }
+  
+  /* Inputs de lujo */
+  .input-luxury {
+    @apply bg-dark-gray border border-medium-gray text-platinum rounded-sm px-4 py-3 
+           font-montserrat placeholder-light-gray
+           focus:outline-none focus:border-deep-magenta focus:ring-1 focus:ring-deep-magenta
+           transition-all duration-200;
+  }
+  
+  /* Galería masonry */
+  .masonry-grid {
+    @apply columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 space-y-4;
+  }
+  
+  .masonry-item {
+    @apply break-inside-avoid mb-4;
+  }
+  
+  /* Lightbox personalizado */
+  .lightbox-overlay {
+    @apply fixed inset-0 bg-overlay-black backdrop-blur-sm z-50 
+           flex items-center justify-center;
+  }
+  
+  .lightbox-content {
+    @apply relative max-w-4xl max-h-[90vh] rounded-sm overflow-hidden;
+  }
+  
+  /* Animaciones de entrada */
+  .animate-fade-in-up {
+    animation: fadeInUp 0.8s ease-out forwards;
+  }
+  
+  .animate-scale-in {
+    animation: scaleIn 0.4s ease-out forwards;
+  }
+  
+  .animate-slide-in {
+    animation: slideIn 0.5s ease-out forwards;
+  }
+  
+  /* Hero section */
+  .hero-section {
+    @apply relative min-h-screen flex items-center justify-center overflow-hidden;
+  }
+  
+  .hero-video {
+    @apply absolute inset-0 w-full h-full object-cover;
+    filter: brightness(0.3) contrast(1.1);
+  }
+  
+  .hero-overlay {
+    @apply absolute inset-0 bg-gradient-to-b from-overlay-black via-transparent to-jet-black;
+  }
+  
+  /* Stats table */
+  .stats-table {
+    @apply w-full border-collapse;
+  }
+  
+  .stats-table th {
+    @apply text-left font-playfair text-platinum font-semibold py-3 px-4 
+           border-b border-medium-gray text-sm;
+  }
+  
+  .stats-table td {
+    @apply py-3 px-4 border-b border-medium-gray font-montserrat text-platinum;
+  }
+  
+  .stats-table tr:hover {
+    @apply bg-dark-gray/50;
+  }
+  
+  /* Filtros laterales */
+  .filter-sidebar {
+    @apply bg-dark-gray border-r border-medium-gray p-6 space-y-6;
+  }
+  
+  .filter-group {
+    @apply space-y-3;
+  }
+  
+  .filter-label {
+    @apply font-playfair text-platinum font-medium text-sm;
+  }
+  
+  /* Checkbox personalizado */
+  .custom-checkbox {
+    @apply relative w-4 h-4 appearance-none bg-dark-gray border border-medium-gray 
+           rounded-sm cursor-pointer transition-all duration-200
+           checked:bg-deep-magenta checked:border-deep-magenta;
+  }
+  
+  .custom-checkbox:checked::after {
+    content: '✓';
+    @apply absolute inset-0 flex items-center justify-center text-platinum text-xs;
+  }
+  
+  /* Loading states */
+  .skeleton {
+    @apply bg-gradient-to-r from-dark-gray via-medium-gray to-dark-gray 
+           bg-[length:200%_100%] animate-pulse;
+  }
+  
+  /* Pulse glow effect */
+  .pulse-glow {
+    animation: pulseGlow 2s ease-in-out infinite;
+  }
+  
+  /* Responsive utilities */
+  @media (max-width: 768px) {
+    .masonry-grid {
+      @apply columns-1;
+    }
+    
+    .hero-text {
+      @apply text-4xl;
+    }
+  }
+}
+
+@layer utilities {
+  /* Utilidades personalizadas */
+  .text-shadow {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  }
+  
+  .text-shadow-lg {
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.7);
+  }
+  
+  .backdrop-blur-xs {
+    backdrop-filter: blur(2px);
+  }
+  
+  /* Gradient overlays */
+  .gradient-overlay {
+    background: linear-gradient(135deg, rgba(139, 0, 70, 0.1) 0%, rgba(5, 5, 5, 0.8) 100%);
+  }
+  
+  /* Focus styles */
+  .focus-luxury {
+    @apply focus:outline-none focus:ring-2 focus:ring-deep-magenta focus:ring-opacity-50;
+  }
+  
+  /* Hover effects */
+  .hover-lift {
+    @apply transition-transform duration-300 hover:-translate-y-1;
+  }
+  
+  .hover-glow {
+    @apply transition-all duration-300 hover:shadow-lg hover:shadow-deep-magenta/25;
+  }
+}
