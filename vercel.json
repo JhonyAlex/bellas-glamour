@@ -2,6 +2,10 @@
   "version": 2,
   "builds": [
     {
+      "src": "api/server.js",
+      "use": "@vercel/node"
+    },
+    {
       "src": "package.json",
       "use": "@vercel/static-build",
       "config": {
@@ -11,52 +15,28 @@
   ],
   "routes": [
     {
+      "src": "/api/(.*)",
+      "dest": "api/server.js"
+    },
+    {
       "src": "/assets/(.*)",
-      "dest": "/assets/$1"
+      "dest": "api/server.js"
     },
     {
       "src": "/(.*\\.js)$",
-      "dest": "/$1"
+      "dest": "api/server.js"
     },
     {
       "src": "/(.*\\.css)$",
-      "dest": "/$1"
+      "dest": "api/server.js"
     },
     {
       "src": "/(.*\\.png|.*\\.jpg|.*\\.jpeg|.*\\.svg|.*\\.webp)$",
-      "dest": "/$1"
-    },
-    {
-      "src": "/api/(.*)",
-      "dest": "/api/$1"
+      "dest": "api/server.js"
     },
     {
       "src": "/(.*)",
-      "dest": "/index.html"
-    }
-  ],
-  "headers": [
-    {
-      "source": "/(.*\\.js)$",
-      "headers": [
-        {
-          "key": "Content-Type",
-          "value": "application/javascript"
-        },
-        {
-          "key": "X-Content-Type-Options",
-          "value": "nosniff"
-        }
-      ]
-    },
-    {
-      "source": "/(.*\\.css)$",
-      "headers": [
-        {
-          "key": "Content-Type",
-          "value": "text/css"
-        }
-      ]
+      "dest": "api/server.js"
     }
   ],
   "env": {
