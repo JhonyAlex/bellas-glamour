@@ -1,69 +1,34 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Eye } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { cn } from '../../utils/cn';
+import { getApprovedModels, Model, ModelPhoto } from '../../lib/supabase';
 
-interface Model {
+interface DisplayModel {
   id: string;
   artistic_name: string;
-  age: number;
+  age?: number;
   nationality: string;
-  height_cm: number;
-  main_photo: string;
-  measurements: {
+  height_cm?: number;
+  mainPhoto?: string;
+  measurements?: {
     bust: number;
     waist: number;
     hips: number;
   };
+  model_photos?: ModelPhoto[];
 }
 
-// Mock data con imágenes reales de Unsplash
-const featuredModels: Model[] = [
-  {
-    id: '1',
-    artistic_name: 'Valentina Rouge',
-    age: 24,
-    nationality: 'Francesa',
-    height_cm: 178,
-    main_photo: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80',
-    measurements: { bust: 90, waist: 62, hips: 92 }
-  },
-  {
-    id: '2',
-    artistic_name: 'Sofia Noche',
-    age: 22,
-    nationality: 'Española',
-    height_cm: 175,
-    main_photo: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80',
-    measurements: { bust: 88, waist: 60, hips: 90 }
-  },
-  {
-    id: '3',
-    artistic_name: 'Isabella Luna',
-    age: 26,
-    nationality: 'Italiana',
-    height_cm: 180,
-    main_photo: 'https://images.unsplash.com/photo-1494790108755-2616b612b5bc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80',
-    measurements: { bust: 92, waist: 64, hips: 94 }
-  },
-  {
-    id: '4',
-    artistic_name: 'Carmen Estrella',
-    age: 23,
-    nationality: 'Argentina',
-    height_cm: 176,
-    main_photo: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80',
-    measurements: { bust: 89, waist: 61, hips: 91 }
-  }
-];
-
 interface ModelCardProps {
-  model: Model;
+  model: DisplayModel;
   index: number;
 }
 
 const ModelCard: React.FC<ModelCardProps> = ({ model, index }) => {
+  const mainPhoto = model.model_photos?.find(p => p.is_approved && p.is_primary)?.photo_url || 
+                   model.model_photos?.find(p => p.is_approved)?.photo_url;
+  
   return (
     <motion.div
       initial={{ opacity: 0, y: 50 }}
@@ -75,7 +40,7 @@ const ModelCard: React.FC<ModelCardProps> = ({ model, index }) => {
       {/* Imagen con optimización de Supabase CDN */}
       <div className="relative aspect-[3/4] overflow-hidden">
         <img
-          src={`${model.main_photo}&width=500&quality=80&format=webp`}
+          src={mainPhoto ? `${mainPhoto}&width=500&quality=80&format=webp` : 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'}
           alt={model.artistic_name}
           className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-110"
           loading="lazy"
@@ -93,20 +58,22 @@ const ModelCard: React.FC<ModelCardProps> = ({ model, index }) => {
         </div>
         
         {/* Stats overlay en hover */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-jet-black via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          <div className="space-y-1 text-xs font-montserrat text-platinum/90">
-            <div className="flex justify-between">
-              <span>Estatura:</span>
-              <span className="text-deep-magenta font-semibold">{model.height_cm}cm</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Medidas:</span>
-              <span className="text-deep-magenta font-semibold">
-                {model.measurements.bust}-{model.measurements.waist}-{model.measurements.hips}
-              </span>
+        {model.height_cm && model.measurements && (
+          <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-jet-black via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <div className="space-y-1 text-xs font-montserrat text-platinum/90">
+              <div className="flex justify-between">
+                <span>Estatura:</span>
+                <span className="text-deep-magenta font-semibold">{model.height_cm}cm</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Medidas:</span>
+                <span className="text-deep-magenta font-semibold">
+                  {model.measurements.bust}-{model.measurements.waist}-{model.measurements.hips}
+                </span>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
       
       {/* Información del modelo */}
@@ -122,8 +89,8 @@ const ModelCard: React.FC<ModelCardProps> = ({ model, index }) => {
         
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4 text-xs font-montserrat text-light-gray">
-            <span>{model.height_cm}cm</span>
-            <span>•</span>
+            {model.height_cm && <span>{model.height_cm}cm</span>}
+            {model.height_cm && model.nationality && <span>•</span>}
             <span>{model.nationality}</span>
           </div>
           
@@ -142,6 +109,63 @@ const ModelCard: React.FC<ModelCardProps> = ({ model, index }) => {
 };
 
 export const FeaturedModels: React.FC = () => {
+  const [models, setModels] = useState<DisplayModel[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchModels = async () => {
+      try {
+        setLoading(true);
+        const { data, error } = await getApprovedModels(6, 0);
+        
+        if (error) {
+          setError('Error al cargar modelos');
+          console.error('Error fetching models:', error);
+        } else if (data) {
+          setModels(data);
+        }
+      } catch (err) {
+        setError('Error al cargar modelos');
+        console.error('Error:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchModels();
+  }, []);
+
+  if (loading) {
+    return (
+      <section className="py-20 bg-gradient-to-b from-jet-black to-dark-gray">
+        <div className="container mx-auto px-4">
+          <div className="text-center">
+            <h2 className="font-playfair text-display text-platinum mb-4">
+              Modelos <span className="text-deep-magenta">Destacadas</span>
+            </h2>
+            <div className="text-platinum/70">Cargando modelos...</div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="py-20 bg-gradient-to-b from-jet-black to-dark-gray">
+        <div className="container mx-auto px-4">
+          <div className="text-center">
+            <h2 className="font-playfair text-display text-platinum mb-4">
+              Modelos <span className="text-deep-magenta">Destacadas</span>
+            </h2>
+            <div className="text-red-500">{error}</div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="py-20 bg-gradient-to-b from-jet-black to-dark-gray">
       <div className="container mx-auto px-4">
@@ -164,7 +188,7 @@ export const FeaturedModels: React.FC = () => {
         
         {/* Grid Masonry */}
         <div className="masonry-grid">
-          {featuredModels.map((model, index) => (
+          {models.map((model, index) => (
             <div key={model.id} className="masonry-item">
               <ModelCard model={model} index={index} />
             </div>

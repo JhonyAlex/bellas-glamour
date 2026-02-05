@@ -1,11 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
-
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn('Supabase environment variables are not configured');
-}
+const supabaseUrl = 'https://gebctgzmugrupzngqggp.supabase.co';
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdlYmN0Z3ptdWdydXB6bmdxZ2dwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAyMjA4MjYsImV4cCI6MjA4NTc5NjgyNn0.jTAe971tOJq_KjskwLGc0tR-7guzJP_hOPqtvhprQiw';
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
@@ -35,63 +31,94 @@ export interface Model {
   id: string;
   user_id: string;
   artistic_name: string;
-  birth_date: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone?: string;
+  age?: number;
   nationality: string;
-  height_cm: number;
-  bust_cm: number;
-  waist_cm: number;
-  hips_cm: number;
-  dress_size: string;
-  shoe_size: number;
-  eye_color: string;
-  hair_color: string;
-  distinctive_features: string;
-  biography: string;
-  status: 'pending' | 'approved' | 'rejected';
+  location: string;
+  height_cm?: number;
+  measurements: {
+    bust: number;
+    waist: number;
+    hips: number;
+  };
+  hair_color?: string;
+  eye_color?: string;
+  skin_tone?: string;
+  special_features?: string[];
+  languages?: string[];
+  experience_years?: number;
+  about?: string;
+  availability: {
+    weekdays: boolean;
+    weekends: boolean;
+    travel: boolean;
+  };
+  social_media?: any;
+  is_verified: boolean;
+  is_featured: boolean;
+  status: 'active' | 'inactive' | 'suspended';
   created_at: string;
   updated_at: string;
-  search_vector?: string;
 }
 
-export interface Photo {
+export interface Client {
+  id: string;
+  user_id: string;
+  company_name: string;
+  contact_name: string;
+  email: string;
+  phone?: string;
+  industry: string;
+  company_size?: 'startup' | 'small' | 'medium' | 'large';
+  location: string;
+  website?: string;
+  social_media?: any;
+  about?: string;
+  is_verified: boolean;
+  status: 'active' | 'inactive' | 'suspended';
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ModelPhoto {
   id: string;
   model_id: string;
-  user_id: string;
-  url: string;
+  photo_url: string;
+  thumbnail_url?: string;
+  category?: 'headshot' | 'full_body' | 'portrait' | 'editorial' | 'swimwear' | 'lingerie' | 'commercial';
+  is_primary: boolean;
   is_approved: boolean;
+  uploaded_at: string;
+}
+
+export interface Message {
+  id: string;
+  sender_id: string;
+  receiver_id: string;
+  subject: string;
+  content: string;
+  is_read: boolean;
+  is_important: boolean;
   created_at: string;
 }
 
-export interface ContactMessage {
+export interface Favorite {
   id: string;
-  sender_id: string;
-  recipient_model_id: string;
-  subject: string;
-  message: string;
-  is_read: boolean;
+  client_id: string;
+  model_id: string;
   created_at: string;
 }
 
 // Funciones de utilidad
-export const calculateAge = (birthDate: string): number => {
-  const today = new Date();
-  const birth = new Date(birthDate);
-  let age = today.getFullYear() - birth.getFullYear();
-  const monthDiff = today.getMonth() - birth.getMonth();
-  
-  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
-    age--;
-  }
-  
-  return age;
-};
-
-export const formatModelForDisplay = (model: Model & { photos?: Photo[] }) => {
+export const formatModelForDisplay = (model: Model & { model_photos?: ModelPhoto[] }) => {
   return {
     ...model,
-    age: calculateAge(model.birth_date),
-    mainPhoto: model.photos?.find(p => p.is_approved)?.url || null,
-    allPhotos: model.photos?.filter(p => p.is_approved) || [],
+    mainPhoto: model.model_photos?.find(p => p.is_approved && p.is_primary)?.photo_url || 
+               model.model_photos?.find(p => p.is_approved)?.photo_url || null,
+    allPhotos: model.model_photos?.filter(p => p.is_approved) || [],
   };
 };
 
@@ -157,10 +184,29 @@ export const getApprovedModels = async (limit: number = 20, offset: number = 0) 
       .from('models')
       .select(`
         *,
-        photos!inner(url, is_approved)
+        model_photos!inner(photo_url, is_approved, is_primary, category)
       `)
-      .eq('status', 'approved')
-      .eq('photos.is_approved', true)
+      .eq('status', 'active')
+      .eq('is_verified', true)
+      .eq('model_photos.is_approved', true)
+      .limit(limit)
+      .range(offset, offset + limit - 1)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    return { data, error: null };
+  } catch (error) {
+    return { data: null, error };
+  }
+};
+
+export const getVerifiedClients = async (limit: number = 20, offset: number = 0) => {
+  try {
+    const { data, error } = await supabase
+      .from('clients')
+      .select(`*`)
+      .eq('status', 'active')
+      .eq('is_verified', true)
       .limit(limit)
       .range(offset, offset + limit - 1)
       .order('created_at', { ascending: false });
@@ -186,14 +232,15 @@ export const searchModels = async (query: string, filters?: {
       .from('models')
       .select(`
         *,
-        photos!inner(url, is_approved)
+        model_photos!inner(photo_url, is_approved, is_primary, category)
       `)
-      .eq('status', 'approved')
-      .eq('photos.is_approved', true);
+      .eq('status', 'active')
+      .eq('is_verified', true)
+      .eq('model_photos.is_approved', true);
 
-    // Búsqueda de texto completo
+    // Búsqueda de texto completo (crearemos un índice tsvector después)
     if (query) {
-      supabaseQuery = supabaseQuery.textSearch('search_vector', query);
+      supabaseQuery = supabaseQuery.or(`artistic_name.ilike.%${query}%,nationality.ilike.%${query}%`);
     }
 
     // Filtros adicionales
@@ -207,17 +254,11 @@ export const searchModels = async (query: string, filters?: {
       if (filters.hair_color) {
         supabaseQuery = supabaseQuery.eq('hair_color', filters.hair_color);
       }
-      if (filters.age_min || filters.age_max) {
-        // Para filtrar por edad, necesitamos calcular las fechas de nacimiento
-        const today = new Date();
-        if (filters.age_min) {
-          const maxBirthDate = new Date(today.getFullYear() - filters.age_min, today.getMonth(), today.getDate());
-          supabaseQuery = supabaseQuery.lte('birth_date', maxBirthDate.toISOString());
-        }
-        if (filters.age_max) {
-          const minBirthDate = new Date(today.getFullYear() - filters.age_max - 1, today.getMonth(), today.getDate());
-          supabaseQuery = supabaseQuery.gte('birth_date', minBirthDate.toISOString());
-        }
+      if (filters.age_min) {
+        supabaseQuery = supabaseQuery.gte('age', filters.age_min);
+      }
+      if (filters.age_max) {
+        supabaseQuery = supabaseQuery.lte('age', filters.age_max);
       }
       if (filters.height_min) {
         supabaseQuery = supabaseQuery.gte('height_cm', filters.height_min);
@@ -236,7 +277,7 @@ export const searchModels = async (query: string, filters?: {
   }
 };
 
-export const uploadPhoto = async (file: File, modelId: string, userId: string) => {
+export const uploadPhoto = async (file: File, modelId: string, category: string = 'portrait') => {
   try {
     const fileName = `${modelId}/${Date.now()}-${file.name}`;
     
@@ -249,13 +290,13 @@ export const uploadPhoto = async (file: File, modelId: string, userId: string) =
 
     if (error) throw error;
 
-    // Crear registro en la tabla photos
+    // Crear registro en la tabla model_photos
     const { data: photoData, error: photoError } = await supabase
-      .from('photos')
+      .from('model_photos')
       .insert({
         model_id: modelId,
-        user_id: userId,
-        url: data.path,
+        photo_url: data.path,
+        category: category,
         is_approved: false,
       });
 
@@ -267,11 +308,11 @@ export const uploadPhoto = async (file: File, modelId: string, userId: string) =
   }
 };
 
-export const sendContactMessage = async (senderId: string, recipientModelId: string, subject: string, message: string) => {
+export const sendMessage = async (senderId: string, receiverId: string, subject: string, content: string) => {
   try {
     // Verificar suscripción activa (rate limiting)
     const { data: existingMessages, error: checkError } = await supabase
-      .from('contact_messages')
+      .from('messages')
       .select('created_at')
       .eq('sender_id', senderId)
       .gte('created_at', new Date(Date.now() - 3600000).toISOString()) // Última hora
@@ -284,14 +325,64 @@ export const sendContactMessage = async (senderId: string, recipientModelId: str
     }
 
     const { data, error } = await supabase
-      .from('contact_messages')
+      .from('messages')
       .insert({
         sender_id: senderId,
-        recipient_model_id: recipientModelId,
+        receiver_id: receiverId,
         subject,
-        message,
+        content,
         is_read: false,
       });
+
+    if (error) throw error;
+    return { data, error: null };
+  } catch (error) {
+    return { data: null, error };
+  }
+};
+
+export const addFavorite = async (clientId: string, modelId: string) => {
+  try {
+    const { data, error } = await supabase
+      .from('favorites')
+      .insert({
+        client_id: clientId,
+        model_id: modelId,
+      });
+
+    if (error) throw error;
+    return { data, error: null };
+  } catch (error) {
+    return { data: null, error };
+  }
+};
+
+export const removeFavorite = async (clientId: string, modelId: string) => {
+  try {
+    const { data, error } = await supabase
+      .from('favorites')
+      .delete()
+      .eq('client_id', clientId)
+      .eq('model_id', modelId);
+
+    if (error) throw error;
+    return { data, error: null };
+  } catch (error) {
+    return { data: null, error };
+  }
+};
+
+export const getFavoritesByClient = async (clientId: string) => {
+  try {
+    const { data, error } = await supabase
+      .from('favorites')
+      .select(`
+        *,
+        models!inner(*, model_photos!inner(photo_url, is_approved, is_primary))
+      `)
+      .eq('client_id', clientId)
+      .eq('models.is_verified', true)
+      .eq('model_photos.is_approved', true);
 
     if (error) throw error;
     return { data, error: null };
@@ -307,10 +398,9 @@ export const getPendingModels = async () => {
       .from('models')
       .select(`
         *,
-        photos(url, is_approved),
-        users(email)
+        model_photos(photo_url, is_approved, is_primary, category)
       `)
-      .eq('status', 'pending')
+      .eq('is_verified', false)
       .order('created_at', { ascending: true });
 
     if (error) throw error;
@@ -324,7 +414,7 @@ export const approveModel = async (modelId: string) => {
   try {
     const { data, error } = await supabase
       .from('models')
-      .update({ status: 'approved' })
+      .update({ is_verified: true })
       .eq('id', modelId);
 
     if (error) throw error;
@@ -338,7 +428,7 @@ export const rejectModel = async (modelId: string) => {
   try {
     const { data, error } = await supabase
       .from('models')
-      .update({ status: 'rejected' })
+      .update({ status: 'suspended' })
       .eq('id', modelId);
 
     if (error) throw error;
@@ -351,7 +441,7 @@ export const rejectModel = async (modelId: string) => {
 export const approvePhoto = async (photoId: string) => {
   try {
     const { data, error } = await supabase
-      .from('photos')
+      .from('model_photos')
       .update({ is_approved: true })
       .eq('id', photoId);
 
