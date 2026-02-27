@@ -1,0 +1,152 @@
+// Bellas Glamour - Agencia de Modelos Premium
+// Database Schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ==================== ENUMS ====================
+
+enum UserRole {
+  ADMIN
+  MODEL
+  VISITOR
+}
+
+enum ProfileStatus {
+  PENDING    // Recién registrado, esperando aprobación
+  APPROVED   // Aprobado y visible públicamente
+  REJECTED   // Rechazado por el admin
+}
+
+enum PhotoStatus {
+  PENDING    // Esperando moderación
+  APPROVED   // Aprobada y visible
+  REJECTED   // Rechazada por contenido inapropiado
+}
+
+// ==================== USER ====================
+
+model User {
+  id        String      @id @default(cuid())
+  email     String      @unique
+  password  String      // Hashed password
+  name      String?
+  role      UserRole    @default(VISITOR)
+  image     String?     // URL de foto de perfil
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  
+  // Relations
+  profile   Profile?
+  photos    Photo[]
+  
+  @@map("users")
+}
+
+// ==================== PROFILE (Modelos) ====================
+
+model Profile {
+  id              String        @id @default(cuid())
+  userId          String        @unique
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Información Personal
+  artisticName    String?       // Nombre artístico
+  bio             String?       // Biografía
+  birthDate       DateTime?     // Fecha de nacimiento
+  nationality     String?       // Nacionalidad
+  location        String?       // Ubicación actual
+  
+  // Características Físicas
+  height          Float?        // Altura en cm
+  weight          Float?        // Peso en kg
+  eyeColor        String?       // Color de ojos
+  hairColor       String?       // Color de cabello
+  skinTone        String?       // Tono de piel
+  measurements    String?       // Medidas (ej: "90-60-90")
+  shoeSize        Float?        // Talla de zapato
+  
+  // Gustos e Intereses
+  hobbies         String?       // Hobbies separados por coma
+  languages       String?       // Idiomas que habla
+  skills          String?       // Habilidades especiales
+  
+  // Información Profesional
+  experience      String?       // Años de experiencia
+  specialties     String?       // Especialidades (moda, comercial, etc.)
+  availability    String?       // Disponibilidad
+  
+  // Redes Sociales
+  instagram       String?
+  twitter         String?
+  tiktok          String?
+  
+  // Estado y Control
+  status          ProfileStatus @default(PENDING)
+  featured        Boolean       @default(false)  // Destacada en home
+  views           Int           @default(0)      // Contador de visitas
+  
+  // Timestamps
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  approvedAt      DateTime?     // Fecha de aprobación
+  
+  // Relations
+  photos          Photo[]
+  
+  @@map("profiles")
+}
+
+// ==================== PHOTOS ====================
+
+model Photo {
+  id              String      @id @default(cuid())
+  profileId       String
+  profile         Profile     @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  uploaderId      String
+  uploader        User        @relation(fields: [uploaderId], references: [id], onDelete: Cascade)
+  
+  // Datos de la imagen
+  url             String      // URL de la imagen
+  publicId        String?     // ID público en storage
+  filename        String?     // Nombre original del archivo
+  mimeType        String?     // Tipo MIME
+  size            Int?        // Tamaño en bytes
+  
+  // Metadatos
+  title           String?     // Título de la foto
+  description     String?     // Descripción
+  category        String?     // Categoría (portfolio, polaroid, etc.)
+  isProfilePhoto  Boolean     @default(false)  // Es foto de perfil principal
+  order           Int         @default(0)      // Orden de aparición
+  
+  // Estado de moderación
+  status          PhotoStatus @default(PENDING)
+  rejectionReason String?     // Razón del rechazo
+  
+  // Timestamps
+  uploadedAt      DateTime    @default(now())
+  approvedAt      DateTime?   // Fecha de aprobación
+  
+  @@index([profileId])
+  @@index([status])
+  @@map("photos")
+}
+
+// ==================== SESSIONS (Para autenticación manual) ====================
+
+model Session {
+  id           String   @id @default(cuid())
+  userId       String
+  token        String   @unique
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+  
+  @@map("sessions")
+}

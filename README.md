@@ -1,111 +1,141 @@
-# BellasGlamour.com
+# 🚀 Welcome to Z.ai Code Scaffold
 
-Una plataforma exclusiva de conexión entre modelos de élite y empresas del mundo de la moda y la publicidad. Diseñada con una estética de lujo y elegancia nocturna.
+A modern, production-ready web application scaffold powered by cutting-edge technologies, designed to accelerate your development with [Z.ai](https://chat.z.ai)'s AI-powered coding assistance.
 
-## 🌟 Características
+## ✨ Technology Stack
 
-### Diseño High Fashion
-- **Paleta de colores**: Jet Black (#050505), Deep Magenta (#8B0046), Platinum, Gold
-- **Tipografías**: Playfair Display (títulos) y Montserrat (cuerpo)
-- **Animaciones elegantes**: Framer Motion con transiciones suaves
-- **Layout responsive**: Grid masonry adaptativo
+This scaffold provides a robust foundation built with:
 
-### Funcionalidades Core
-- **Hero Section**: Video background optimizado con lazy loading
-- **Buscador Avanzado**: Filtros por edad, estatura, nacionalidad, características físicas
-- **Perfiles de Modelos**: Galería de fotos, medidas, biografía
-- **Sistema de Autenticación**: Roles (Modelo, Cliente, Admin)
-- **Panel de Administración**: Moderación de perfiles y fotos
-- **Contacto Directo**: Sistema de mensajería con rate limiting
+### 🎯 Core Framework
+- **⚡ Next.js 16** - The React framework for production with App Router
+- **📘 TypeScript 5** - Type-safe JavaScript for better developer experience
+- **🎨 Tailwind CSS 4** - Utility-first CSS framework for rapid UI development
 
-### Optimizaciones Enterprise
-- **Supabase Image Transformations**: CDN automático para imágenes
-- **Búsqueda Full-Text**: PostgreSQL tsvector para búsquedas semánticas
-- **Rate Limiting**: Anti-spam con límite de 5 mensajes/hora
-- **WebM Video**: Ultra-comprimido con overlay de grano
-- **Lazy Loading**: Optimización de rendimiento
+### 🧩 UI Components & Styling
+- **🧩 shadcn/ui** - High-quality, accessible components built on Radix UI
+- **🎯 Lucide React** - Beautiful & consistent icon library
+- **🌈 Framer Motion** - Production-ready motion library for React
+- **🎨 Next Themes** - Perfect dark mode in 2 lines of code
 
-## 🚀 Tecnologías
+### 📋 Forms & Validation
+- **🎣 React Hook Form** - Performant forms with easy validation
+- **✅ Zod** - TypeScript-first schema validation
 
-- **Frontend**: React 18 + TypeScript + Vite
-- **Backend**: Supabase (Backend-as-a-Service)
-- **Estilos**: Tailwind CSS con componentes personalizados
-- **Animaciones**: Framer Motion
-- **Estado**: Zustand con persistencia
-- **Despliegue**: Vercel
+### 🔄 State Management & Data Fetching
+- **🐻 Zustand** - Simple, scalable state management
+- **🔄 TanStack Query** - Powerful data synchronization for React
+- **🌐 Fetch** - Promise-based HTTP request
 
-## 📦 Instalación
+### 🗄️ Database & Backend
+- **🗄️ Prisma** - Next-generation TypeScript ORM
+- **🔐 NextAuth.js** - Complete open-source authentication solution
+
+### 🎨 Advanced UI Features
+- **📊 TanStack Table** - Headless UI for building tables and datagrids
+- **🖱️ DND Kit** - Modern drag and drop toolkit for React
+- **📊 Recharts** - Redefined chart library built with React and D3
+- **🖼️ Sharp** - High performance image processing
+
+### 🌍 Internationalization & Utilities
+- **🌍 Next Intl** - Internationalization library for Next.js
+- **📅 Date-fns** - Modern JavaScript date utility library
+- **🪝 ReactUse** - Collection of essential React hooks for modern development
+
+## 🎯 Why This Scaffold?
+
+- **🏎️ Fast Development** - Pre-configured tooling and best practices
+- **🎨 Beautiful UI** - Complete shadcn/ui component library with advanced interactions
+- **🔒 Type Safety** - Full TypeScript configuration with Zod validation
+- **📱 Responsive** - Mobile-first design principles with smooth animations
+- **🗄️ Database Ready** - Prisma ORM configured for rapid backend development
+- **🔐 Auth Included** - NextAuth.js for secure authentication flows
+- **📊 Data Visualization** - Charts, tables, and drag-and-drop functionality
+- **🌍 i18n Ready** - Multi-language support with Next Intl
+- **🚀 Production Ready** - Optimized build and deployment settings
+- **🤖 AI-Friendly** - Structured codebase perfect for AI assistance
+
+## 🚀 Quick Start
 
 ```bash
-# Clonar el repositorio
-git clone https://github.com/tu-usuario/bellas-glamour.git
+# Install dependencies
+bun install
 
-# Instalar dependencias
-npm install
+# Start development server
+bun run dev
 
-# Configurar variables de entorno
-cp .env.example .env
-# Editar .env con tus credenciales de Supabase
+# Build for production
+bun run build
 
-# Desarrollo local
-npm run dev
-
-# Construir para producción
-npm run build
+# Start production server
+bun start
 ```
 
-## 🔧 Variables de Entorno
+Open [http://localhost:3000](http://localhost:3000) to see your application running.
 
-```env
-VITE_SUPABASE_URL=your_supabase_project_url
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-VITE_APP_NAME=BellasGlamour
-VITE_APP_ENV=production
-VITE_APP_URL=https://your-domain.vercel.app
-```
+## 🤖 Powered by Z.ai
 
-## 📁 Estructura del Proyecto
+This scaffold is optimized for use with [Z.ai](https://chat.z.ai) - your AI assistant for:
+
+- **💻 Code Generation** - Generate components, pages, and features instantly
+- **🎨 UI Development** - Create beautiful interfaces with AI assistance  
+- **🔧 Bug Fixing** - Identify and resolve issues with intelligent suggestions
+- **📝 Documentation** - Auto-generate comprehensive documentation
+- **🚀 Optimization** - Performance improvements and best practices
+
+Ready to build something amazing? Start chatting with Z.ai at [chat.z.ai](https://chat.z.ai) and experience the future of AI-powered development!
+
+## 📁 Project Structure
 
 ```
 src/
-├── components/          # Componentes React
-│   ├── ui/             # Componentes UI reutilizables
-│   ├── layout/         # Header, navegación
-│   ├── home/           # Hero, modelos destacados
-│   └── auth/           # Login, registro
-├── pages/              # Vistas principales
-├── store/              # Estado global (Zustand)
-├── lib/                # Supabase y utilidades
-└── styles/             # CSS personalizado
+├── app/                 # Next.js App Router pages
+├── components/          # Reusable React components
+│   └── ui/             # shadcn/ui components
+├── hooks/              # Custom React hooks
+└── lib/                # Utility functions and configurations
 ```
 
-## 🎯 Demo en Vivo
+## 🎨 Available Features & Components
 
-La aplicación está desplegada en: **https://traebellas-glamourvkr0.vercel.app**
+This scaffold includes a comprehensive set of modern web development tools:
 
-## 🔒 Seguridad
+### 🧩 UI Components (shadcn/ui)
+- **Layout**: Card, Separator, Aspect Ratio, Resizable Panels
+- **Forms**: Input, Textarea, Select, Checkbox, Radio Group, Switch
+- **Feedback**: Alert, Toast (Sonner), Progress, Skeleton
+- **Navigation**: Breadcrumb, Menubar, Navigation Menu, Pagination
+- **Overlay**: Dialog, Sheet, Popover, Tooltip, Hover Card
+- **Data Display**: Badge, Avatar, Calendar
 
-- Row Level Security (RLS) en Supabase
-- Rate limiting para prevenir spam
-- Validación de formularios
-- Autenticación segura con JWT
+### 📊 Advanced Data Features
+- **Tables**: Powerful data tables with sorting, filtering, pagination (TanStack Table)
+- **Charts**: Beautiful visualizations with Recharts
+- **Forms**: Type-safe forms with React Hook Form + Zod validation
 
-## 📋 Próximas Mejoras
+### 🎨 Interactive Features
+- **Animations**: Smooth micro-interactions with Framer Motion
+- **Drag & Drop**: Modern drag-and-drop functionality with DND Kit
+- **Theme Switching**: Built-in dark/light mode support
 
-- [ ] Integración con pasarela de pago
-- [ ] Sistema de notificaciones por email
-- [ ] Chat en tiempo real
-- [ ] Panel de analytics para modelos
-- [ ] App móvil
+### 🔐 Backend Integration
+- **Authentication**: Ready-to-use auth flows with NextAuth.js
+- **Database**: Type-safe database operations with Prisma
+- **API Client**: HTTP requests with Fetch + TanStack Query
+- **State Management**: Simple and scalable with Zustand
 
-## 📄 Licencia
+### 🌍 Production Features
+- **Internationalization**: Multi-language support with Next Intl
+- **Image Optimization**: Automatic image processing with Sharp
+- **Type Safety**: End-to-end TypeScript with Zod validation
+- **Essential Hooks**: 100+ useful React hooks with ReactUse for common patterns
 
-Este proyecto está bajo la Licencia MIT.
+## 🤝 Get Started with Z.ai
 
-## 👥 Equipo
-
-Desarrollado por el equipo SOLO Builder - Trae IDE
+1. **Clone this scaffold** to jumpstart your project
+2. **Visit [chat.z.ai](https://chat.z.ai)** to access your AI coding assistant
+3. **Start building** with intelligent code generation and assistance
+4. **Deploy with confidence** using the production-ready setup
 
 ---
 
-**BellasGlamour** - Donde el lujo encuentra la perfección ✨
+Built with ❤️ for the developer community. Supercharged by [Z.ai](https://chat.z.ai) 🚀
