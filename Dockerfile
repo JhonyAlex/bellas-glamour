@@ -59,8 +59,7 @@ COPY --from=builder /app/node_modules/@prisma/client ./node_modules/@prisma/clie
 # Copiar Prisma schema para migraciones
 COPY --from=builder /app/prisma ./prisma
 
-# Instalar Prisma CLI COMO ROOT (antes de cambiar de usuario)
-# y dar permisos de escritura al directorio de engines
+# Instalar Prisma CLI y dar permisos a engines
 RUN npm install -g prisma@6 --ignore-scripts 2>/dev/null && \
     mkdir -p /usr/local/lib/node_modules/prisma/node_modules/@prisma/engines && \
     chmod -R 777 /usr/local/lib/node_modules/prisma/node_modules/@prisma/engines
@@ -68,30 +67,12 @@ RUN npm install -g prisma@6 --ignore-scripts 2>/dev/null && \
 # Directorio de uploads
 RUN mkdir -p /app/public/uploads && chown nextjs:nodejs /app/public/uploads
 
-# Crear entrypoint inline (evita problemas CRLF de Windows)
-RUN printf '#!/bin/sh\n\
-set -e\n\
-echo "=== Bellas Glamour - Startup ==="\n\
-echo "Environment: $NODE_ENV"\n\
-echo "Running Prisma migrations..."\n\
-if prisma migrate deploy --schema=./prisma/schema.prisma 2>&1; then\n\
-  echo "Migrations applied successfully"\n\
-else\n\
-  echo "Migration failed, trying db push..."\n\
-  if prisma db push --schema=./prisma/schema.prisma --accept-data-loss 2>&1; then\n\
-    echo "Schema pushed successfully (fallback)"\n\
-  else\n\
-    echo "Both migration and push failed. Starting app anyway..."\n\
-  fi\n\
-fi\n\
-echo "Starting Next.js server on port ${PORT:-3000}..."\n\
-exec node server.js\n' > /app/entrypoint.sh && chmod +x /app/entrypoint.sh
-
 USER nextjs
 
 EXPOSE 3000
 
-HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=5 \
-  CMD wget -q --spider http://localhost:3000/ || exit 1
+# Sin HEALTHCHECK — Coolify gestiona el health monitoring externamente.
+# El healthcheck interno causaba rollbacks falsos porque wget --spider
+# no es compatible con las respuestas de Next.js standalone.
 
-ENTRYPOINT ["/app/entrypoint.sh"]
+CMD ["sh", "-c", "echo '=== Bellas Glamour Startup ===' && echo 'Running migrations...' && (prisma migrate deploy --schema=./prisma/schema.prisma 2>&1 || prisma db push --schema=./prisma/schema.prisma --accept-data-loss 2>&1 || echo 'Migrations skipped') && echo 'Starting server...' && node server.js"]
