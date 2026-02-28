@@ -49,6 +49,7 @@ export function ModelDashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [deletingPhotoId, setDeletingPhotoId] = useState<string | null>(null);
   
   // Form state
   const [formData, setFormData] = useState({
@@ -187,6 +188,36 @@ export function ModelDashboard() {
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
+    }
+  };
+
+  const handleDeletePhoto = async (photoId: string) => {
+    if (!confirm("¿Estás segura de que quieres eliminar esta foto?")) return;
+
+    setDeletingPhotoId(photoId);
+    try {
+      const response = await fetch(`/api/photos/${photoId}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Error al eliminar foto");
+      }
+
+      setPhotos((prev) => prev.filter((p) => p.id !== photoId));
+      toast({
+        title: "Foto eliminada",
+        description: "La foto ha sido eliminada exitosamente.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "No se pudo eliminar la foto.",
+        variant: "destructive",
+      });
+    } finally {
+      setDeletingPhotoId(null);
     }
   };
 
@@ -497,8 +528,22 @@ export function ModelDashboard() {
                       alt="Foto"
                       className="w-full h-full object-cover"
                     />
-                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2">
                       {getStatusBadge(photo.status)}
+                      <button
+                        onClick={() => handleDeletePhoto(photo.id)}
+                        disabled={deletingPhotoId === photo.id}
+                        className="inline-flex items-center text-xs text-red-400 bg-red-400/20 hover:bg-red-400/40 px-2 py-1 rounded transition-colors"
+                      >
+                        {deletingPhotoId === photo.id ? (
+                          <Loader2 className="w-3 h-3 animate-spin" />
+                        ) : (
+                          <>
+                            <Trash2 className="w-3 h-3 mr-1" />
+                            Eliminar
+                          </>
+                        )}
+                      </button>
                     </div>
                     {photo.isProfilePhoto && (
                       <div className="absolute top-1 left-1 bg-gold-500 text-black text-xs font-bold px-2 py-0.5 rounded">
