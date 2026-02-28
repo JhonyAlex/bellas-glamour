@@ -6,6 +6,15 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
   reactStrictMode: false,
+  // Rewrite /uploads/* to API route for reliable file serving in Docker standalone
+  async rewrites() {
+    return [
+      {
+        source: "/uploads/:path*",
+        destination: "/api/uploads/:path*",
+      },
+    ];
+  },
   // Turbopack configuration for path aliases
   // https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack
   turbopack: {

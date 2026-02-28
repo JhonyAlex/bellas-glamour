@@ -79,15 +79,27 @@ export async function PUT(request: NextRequest) {
       );
     }
     
+    // Verify profile exists
+    const existingProfile = await db.profile.findUnique({
+      where: { userId: user.id },
+    });
+
+    if (!existingProfile) {
+      return NextResponse.json(
+        { error: "Perfil no encontrado. Completa el registro primero." },
+        { status: 404 }
+      );
+    }
+
     const body = await request.json();
     const validatedData = profileUpdateSchema.parse(body);
-    
+
     // Prepare update data with proper date handling
     const updateData: Record<string, unknown> = { ...validatedData };
     if (validatedData.birthDate) {
       updateData.birthDate = new Date(validatedData.birthDate);
     }
-    
+
     const profile = await db.profile.update({
       where: { userId: user.id },
       data: updateData,

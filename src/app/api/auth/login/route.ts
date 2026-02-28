@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    console.error("Login error:", error);
+    console.error("Login error:", error instanceof Error ? error.message : error);
     return NextResponse.json(
       { error: "Error al iniciar sesión" },
       { status: 500 }
