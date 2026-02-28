@@ -1,21 +1,27 @@
 # ==========================================
 # Bellas Glamour - Dockerfile para Coolify
-# Bun + Next.js 16 + Prisma + Supabase
+# Node.js para BUILD + Bun para RUNTIME
 # ==========================================
 
-# Stage 1: Dependencies
-FROM oven/bun:1.2-alpine AS deps
+# Stage 1: Dependencies (usando Node.js para compatibilidad con Turbopack)
+FROM node:22-alpine AS deps
 WORKDIR /app
+
+# Instalar bun para usar bun install (más rápido)
+RUN npm install -g bun
 
 # Copy package files
 COPY package.json bun.lock ./
 
-# Install dependencies
+# Install dependencies con bun
 RUN bun install --frozen-lockfile
 
-# Stage 2: Builder
-FROM oven/bun:1.2-alpine AS builder
+# Stage 2: Builder (Node.js para el build de Next.js con Turbopack)
+FROM node:22-alpine AS builder
 WORKDIR /app
+
+# Instalar bun
+RUN npm install -g bun
 
 # Copy dependencies from deps stage
 COPY --from=deps /app/node_modules ./node_modules
@@ -26,13 +32,13 @@ COPY . .
 # Generate Prisma client
 RUN bunx prisma generate
 
-# Build Next.js application
+# Build Next.js application con Node.js (evita bugs de Bun con worker_threads)
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 
-RUN bun run build
+RUN npx next build && cp -r .next/static .next/standalone/.next/ && cp -r public .next/standalone/
 
-# Stage 3: Runner (Production)
+# Stage 3: Runner (Bun para el runtime - más rápido)
 FROM oven/bun:1.2-alpine AS runner
 WORKDIR /app
 
@@ -62,5 +68,5 @@ EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-# Start the application
+# Start the application con Bun (más rápido que Node.js en runtime)
 CMD ["bun", "server.js"]
