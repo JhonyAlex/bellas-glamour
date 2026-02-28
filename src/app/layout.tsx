@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Lato, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
+import { Providers } from "./providers";
 
 const lato = Lato({
   variable: "--font-lato",
@@ -45,7 +46,9 @@ export default function RootLayout({
       <body
         className={`${lato.variable} ${playfair.variable} antialiased bg-background text-foreground min-h-screen flex flex-col`}
       >
-        {children}
+        <Providers>
+          {children}
+        </Providers>
         <Toaster />
       </body>
     </html>
