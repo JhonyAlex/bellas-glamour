@@ -10,6 +10,14 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
   reactStrictMode: false,
+  // Configure Turbopack path aliases (required for Next.js 16 with Turbopack)
+  experimental: {
+    turbo: {
+      resolveAlias: {
+        "@": "./src",
+      },
+    },
+  },
 };
 
 export default nextConfig;
