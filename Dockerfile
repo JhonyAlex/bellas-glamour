@@ -37,7 +37,7 @@ RUN bunx prisma generate
 # Usamos npx next build para asegurar que corre con Node.js, no Bun
 ENV NEXT_TELEMETRY_DISABLED=1
 
-RUN NODE_ENV=production npx next build
+RUN NODE_ENV=production npx next build --no-turbopack
 
 # Copiar archivos estáticos al standalone (requerido por Next.js standalone)
 RUN cp -r .next/static .next/standalone/.next/ && cp -r public .next/standalone/
