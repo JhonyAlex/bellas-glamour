@@ -71,8 +71,8 @@ USER nextjs
 
 EXPOSE 3000
 
-# Sin HEALTHCHECK — Coolify gestiona el health monitoring externamente.
-# El healthcheck interno causaba rollbacks falsos porque wget --spider
-# no es compatible con las respuestas de Next.js standalone.
+# Healthcheck usando Node.js (más fiable que wget/curl con Next.js)
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=5 \
+  CMD node -e "require('net').connect(3000,'localhost',()=>process.exit(0)).on('error',()=>process.exit(1))"
 
-CMD ["sh", "-c", "echo '=== Bellas Glamour Startup ===' && echo 'Running migrations...' && (prisma migrate deploy --schema=./prisma/schema.prisma 2>&1 || prisma db push --schema=./prisma/schema.prisma --accept-data-loss 2>&1 || echo 'Migrations skipped') && echo 'Starting server...' && node server.js"]
+CMD ["sh", "-c", "echo '=== Bellas Glamour Startup ===' && (prisma migrate deploy --schema=./prisma/schema.prisma 2>&1 || prisma db push --schema=./prisma/schema.prisma --accept-data-loss 2>&1 || echo 'Migrations skipped') && echo 'Starting server...' && node server.js"]
