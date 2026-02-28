@@ -1,6 +1,6 @@
-Error: Cannot find module '@prisma/debug'
+Error: Cannot find module 'effect'
 Require stack:
-- /app/node_modules/@prisma/engines/dist/index.js
+- /app/node_modules/@prisma/config/dist/index.js
 - /app/node_modules/prisma/build/index.js
 at Function._resolveFilename (node:internal/modules/cjs/loader:1383:15)
 at defaultResolveImpl (node:internal/modules/cjs/loader:1025:19)
@@ -10,11 +10,11 @@ at TracingChannel.traceSync (node:diagnostics_channel:328:14)
 at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)
 at Module.require (node:internal/modules/cjs/loader:1463:12)
 at require (node:internal/modules/helpers:147:16)
-at Object. (/app/node_modules/@prisma/engines/dist/index.js:40:20)
+at Object. (/app/node_modules/@prisma/config/dist/index.js:361:22)
 at Module._compile (node:internal/modules/cjs/loader:1706:14) {
 code: 'MODULE_NOT_FOUND',
 requireStack: [
-'/app/node_modules/@prisma/engines/dist/index.js',
+'/app/node_modules/@prisma/config/dist/index.js',
 '/app/node_modules/prisma/build/index.js'
 ]
 }
@@ -22,9 +22,9 @@ Node.js v22.22.0
 node:internal/modules/cjs/loader:1386
 throw err;
 ^
-Error: Cannot find module '@prisma/debug'
+Error: Cannot find module 'effect'
 Require stack:
-- /app/node_modules/@prisma/engines/dist/index.js
+- /app/node_modules/@prisma/config/dist/index.js
 - /app/node_modules/prisma/build/index.js
 at Function._resolveFilename (node:internal/modules/cjs/loader:1383:15)
 at defaultResolveImpl (node:internal/modules/cjs/loader:1025:19)
@@ -34,11 +34,11 @@ at TracingChannel.traceSync (node:diagnostics_channel:328:14)
 at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)
 at Module.require (node:internal/modules/cjs/loader:1463:12)
 at require (node:internal/modules/helpers:147:16)
-at Object. (/app/node_modules/@prisma/engines/dist/index.js:40:20)
+at Object. (/app/node_modules/@prisma/config/dist/index.js:361:22)
 at Module._compile (node:internal/modules/cjs/loader:1706:14) {
 code: 'MODULE_NOT_FOUND',
 requireStack: [
-'/app/node_modules/@prisma/engines/dist/index.js',
+'/app/node_modules/@prisma/config/dist/index.js',
 '/app/node_modules/prisma/build/index.js'
 ]
 }
@@ -46,9 +46,9 @@ Node.js v22.22.0
 node:internal/modules/cjs/loader:1386
 throw err;
 ^
-Error: Cannot find module '@prisma/debug'
+Error: Cannot find module 'effect'
 Require stack:
-- /app/node_modules/@prisma/engines/dist/index.js
+- /app/node_modules/@prisma/config/dist/index.js
 - /app/node_modules/prisma/build/index.js
 at Function._resolveFilename (node:internal/modules/cjs/loader:1383:15)
 at defaultResolveImpl (node:internal/modules/cjs/loader:1025:19)
@@ -58,11 +58,11 @@ at TracingChannel.traceSync (node:diagnostics_channel:328:14)
 at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)
 at Module.require (node:internal/modules/cjs/loader:1463:12)
 at require (node:internal/modules/helpers:147:16)
-at Object. (/app/node_modules/@prisma/engines/dist/index.js:40:20)
+at Object. (/app/node_modules/@prisma/config/dist/index.js:361:22)
 at Module._compile (node:internal/modules/cjs/loader:1706:14) {
 code: 'MODULE_NOT_FOUND',
 requireStack: [
-'/app/node_modules/@prisma/engines/dist/index.js',
+'/app/node_modules/@prisma/config/dist/index.js',
 '/app/node_modules/prisma/build/index.js'
 ]
 }
@@ -70,9 +70,9 @@ Node.js v22.22.0
 node:internal/modules/cjs/loader:1386
 throw err;
 ^
-Error: Cannot find module '@prisma/debug'
+Error: Cannot find module 'effect'
 Require stack:
-- /app/node_modules/@prisma/engines/dist/index.js
+- /app/node_modules/@prisma/config/dist/index.js
 - /app/node_modules/prisma/build/index.js
 at Function._resolveFilename (node:internal/modules/cjs/loader:1383:15)
 at defaultResolveImpl (node:internal/modules/cjs/loader:1025:19)
@@ -82,11 +82,11 @@ at TracingChannel.traceSync (node:diagnostics_channel:328:14)
 at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)
 at Module.require (node:internal/modules/cjs/loader:1463:12)
 at require (node:internal/modules/helpers:147:16)
-at Object. (/app/node_modules/@prisma/engines/dist/index.js:40:20)
+at Object. (/app/node_modules/@prisma/config/dist/index.js:361:22)
 at Module._compile (node:internal/modules/cjs/loader:1706:14) {
 code: 'MODULE_NOT_FOUND',
 requireStack: [
-'/app/node_modules/@prisma/engines/dist/index.js',
+'/app/node_modules/@prisma/config/dist/index.js',
 '/app/node_modules/prisma/build/index.js'
 ]
 }

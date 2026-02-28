@@ -63,10 +63,12 @@ RUN mkdir -p /app/public/uploads && chown nextjs:nodejs /app/public/uploads
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-# Copy all Prisma dependencies (client, engines, CLI, and all internal packages)
+# Copy Prisma client for app runtime (used by Next.js at runtime)
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
-COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
+COPY --from=builder /app/node_modules/@prisma/client ./node_modules/@prisma/client
+
+# Install Prisma CLI globally for migrations (includes all transitive deps)
+RUN npm install -g prisma@$(node -e "console.log(require('/app/node_modules/@prisma/client/package.json').version)")
 
 # Copy Prisma schema and migrations
 COPY --from=builder /app/prisma ./prisma
@@ -79,4 +81,4 @@ ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
 # Run migrations and start the application
-CMD ["sh", "-c", "node node_modules/prisma/build/index.js migrate deploy && node server.js"]
+CMD ["sh", "-c", "prisma migrate deploy --schema=./prisma/schema.prisma && node server.js"]
