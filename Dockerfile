@@ -60,10 +60,16 @@ COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-# Copy Prisma generated client (runtime only - no CLI needed)
+# Copy Prisma client + CLI for migrations
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/node_modules/@prisma/client ./node_modules/@prisma/client
 COPY --from=builder /app/node_modules/@prisma/engines ./node_modules/@prisma/engines
+COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
+COPY --from=builder /app/node_modules/@prisma/migrate ./node_modules/@prisma/migrate
+COPY --from=builder /app/node_modules/@prisma/schema-files-loader ./node_modules/@prisma/schema-files-loader
+
+# Copy Prisma schema and migrations
+COPY --from=builder /app/prisma ./prisma
 
 USER nextjs
 
@@ -72,5 +78,5 @@ EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-# Start the application (run migrations via Coolify pre-deploy or manually)
-CMD node server.js
+# Run migrations and start the application
+CMD npx prisma migrate deploy && node server.js
