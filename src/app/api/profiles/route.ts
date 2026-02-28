@@ -31,14 +31,14 @@ const profileUpdateSchema = z.object({
 export async function GET(request: NextRequest) {
   try {
     const user = await getCurrentUser(request);
-    
+
     if (!user) {
       return NextResponse.json(
         { error: "No autenticado" },
         { status: 401 }
       );
     }
-    
+
     const profile = await db.profile.findUnique({
       where: { userId: user.id },
       include: {
@@ -49,7 +49,7 @@ export async function GET(request: NextRequest) {
         },
       },
     });
-    
+
     return NextResponse.json(profile);
   } catch (error) {
     console.error("Get profile error:", error);
@@ -64,21 +64,21 @@ export async function GET(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const user = await getCurrentUser(request);
-    
+
     if (!user) {
       return NextResponse.json(
         { error: "No autenticado" },
         { status: 401 }
       );
     }
-    
+
     if (user.role !== "MODEL") {
       return NextResponse.json(
         { error: "Solo las modelos pueden editar su perfil" },
         { status: 403 }
       );
     }
-    
+
     // Verify profile exists
     const existingProfile = await db.profile.findUnique({
       where: { userId: user.id },
@@ -104,16 +104,16 @@ export async function PUT(request: NextRequest) {
       where: { userId: user.id },
       data: updateData,
     });
-    
+
     return NextResponse.json(profile);
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: error.errors?.[0]?.message || "Datos inválidos" },
+        { error: error.issues?.[0]?.message || "Datos inválidos" },
         { status: 400 }
       );
     }
-    
+
     console.error("Update profile error:", error);
     return NextResponse.json(
       { error: "Error al actualizar perfil" },

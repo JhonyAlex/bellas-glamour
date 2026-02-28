@@ -14,22 +14,22 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const validatedData = registerSchema.parse(body);
-    
+
     // Check if user already exists
     const existingUser = await db.user.findUnique({
       where: { email: validatedData.email },
     });
-    
+
     if (existingUser) {
       return NextResponse.json(
         { error: "Ya existe una cuenta con este email" },
         { status: 400 }
       );
     }
-    
+
     // Hash password
     const hashedPassword = await hashPassword(validatedData.password);
-    
+
     // Create user
     const user = await db.user.create({
       data: {
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
         role: validatedData.role,
       },
     });
-    
+
     // If registering as model, create a pending profile
     if (validatedData.role === "MODEL") {
       await db.profile.create({
@@ -49,10 +49,10 @@ export async function POST(request: NextRequest) {
         },
       });
     }
-    
+
     // Generate token
     const token = generateToken(user.id);
-    
+
     // Create response
     const response = NextResponse.json({
       user: {
@@ -63,19 +63,19 @@ export async function POST(request: NextRequest) {
       },
       token,
     });
-    
+
     // Set auth cookie
     setAuthCookie(response, token);
-    
+
     return response;
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: error.errors[0].message },
+        { error: error.issues[0].message },
         { status: 400 }
       );
     }
-    
+
     console.error("Register error:", error);
     return NextResponse.json(
       { error: "Error al crear la cuenta" },

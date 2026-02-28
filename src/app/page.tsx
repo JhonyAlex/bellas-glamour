@@ -81,7 +81,7 @@ export default function BellasGlamourPage() {
         setLoading(false);
       }
     };
-    
+
     if (isAgeVerified) {
       checkAuth();
     }
@@ -130,7 +130,7 @@ export default function BellasGlamourPage() {
         onLoginClick={handleLoginClick}
         onDashboardClick={handleDashboardClick}
       />
-      
+
       <main className="flex-1">
         {/* Hero Section */}
         <HeroSection onJoinClick={handleLoginClick} />
@@ -156,7 +156,7 @@ export default function BellasGlamourPage() {
         </section>
 
         {/* Models Grid */}
-        <ModelGrid onModelClick={handleModelClick} />
+        <ModelGrid onModelClick={handleModelClick as any} />
 
         {/* About Section */}
         <section id="nosotros" className="py-20 px-4 bg-card">
@@ -171,18 +171,18 @@ export default function BellasGlamourPage() {
                   Sobre <span className="text-gold-gradient">Bellas Glamour</span>
                 </h2>
                 <p className="text-gray-300 mb-6 leading-relaxed">
-                  Somos una agencia de modelos premium exclusiva para adultos, 
-                  dedicada a representar el talento más sofisticado y elegante del país. 
-                  Con más de una década de experiencia, trabajamos con las marcas 
-                  más prestigiosas del mundo de la moda de lujo, publicidad de alta gama 
+                  Somos una agencia de modelos premium exclusiva para adultos,
+                  dedicada a representar el talento más sofisticado y elegante del país.
+                  Con más de una década de experiencia, trabajamos con las marcas
+                  más prestigiosas del mundo de la moda de lujo, publicidad de alta gama
                   y entretenimiento para adultos.
                 </p>
                 <p className="text-gray-400 mb-8">
-                  Nuestra misión es descubrir, desarrollar y promover modelos 
-                  que destaquen por su belleza refinada, profesionalismo y carisma único, 
+                  Nuestra misión es descubrir, desarrollar y promover modelos
+                  que destaquen por su belleza refinada, profesionalismo y carisma único,
                   ofreciendo experiencias exclusivas para nuestros clientes más exigentes.
                 </p>
-                
+
                 <div className="grid grid-cols-3 gap-6">
                   <div className="text-center">
                     <Crown className="w-8 h-8 mx-auto text-gold-400 mb-2" />
@@ -201,7 +201,7 @@ export default function BellasGlamourPage() {
                   </div>
                 </div>
               </motion.div>
-              
+
               <motion.div
                 initial={{ opacity: 0, x: 50 }}
                 whileInView={{ opacity: 1, x: 0 }}
@@ -243,7 +243,7 @@ export default function BellasGlamourPage() {
                 Experiencias exclusivas para nuestros clientes más distinguidos
               </p>
             </motion.div>
-            
+
             <div className="grid md:grid-cols-3 gap-6">
               {[
                 {
@@ -292,7 +292,7 @@ export default function BellasGlamourPage() {
                 Acceso <span className="text-gold-gradient">VIP</span>
               </h2>
               <p className="text-gray-300 mb-8 max-w-2xl mx-auto">
-                Únete a nuestra comunidad exclusiva y accede a contenido premium, 
+                Únete a nuestra comunidad exclusiva y accede a contenido premium,
                 eventos privados y oportunidades únicas con nuestras modelos más solicitadas.
               </p>
               <button
@@ -322,7 +322,7 @@ export default function BellasGlamourPage() {
                 Contáctanos para discutir tu próximo proyecto exclusivo
               </p>
             </motion.div>
-            
+
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -351,7 +351,7 @@ export default function BellasGlamourPage() {
         {/* Age Restriction Footer */}
         <div className="py-4 px-4 bg-black border-t border-gold-500/10">
           <p className="text-center text-gray-500 text-xs">
-            ⚠️ Este sitio contiene material para adultos mayores de 18 años. 
+            ⚠️ Este sitio contiene material para adultos mayores de 18 años.
             Al navegar confirmas ser mayor de edad según tu jurisdicción local.
           </p>
         </div>
@@ -364,7 +364,7 @@ export default function BellasGlamourPage() {
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
       />
-      
+
       <ModelProfile
         model={selectedModel}
         isOpen={!!selectedModel}

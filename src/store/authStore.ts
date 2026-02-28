@@ -21,6 +21,7 @@ export interface Profile {
   measurements: string | null;
   status: "PENDING" | "APPROVED" | "REJECTED";
   featured: boolean;
+  views?: number;
 }
 
 interface AuthState {
@@ -29,7 +30,7 @@ interface AuthState {
   token: string | null;
   isLoading: boolean;
   isAuthenticated: boolean;
-  
+
   setUser: (user: User | null) => void;
   setProfile: (profile: Profile | null) => void;
   setToken: (token: string | null) => void;
@@ -46,19 +47,19 @@ export const useAuthStore = create<AuthState>()(
       token: null,
       isLoading: true,
       isAuthenticated: false,
-      
+
       setUser: (user) => set({ user, isAuthenticated: !!user }),
       setProfile: (profile) => set({ profile }),
       setToken: (token) => set({ token }),
       setLoading: (isLoading) => set({ isLoading }),
-      
+
       login: (user, token) => set({
         user,
         token,
         isAuthenticated: true,
         isLoading: false,
       }),
-      
+
       logout: () => set({
         user: null,
         profile: null,

@@ -2,12 +2,13 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Crown, Users, Camera, Check, X, Eye, Clock, 
-  Loader2, AlertCircle, ChevronDown, ChevronUp
+import {
+  Crown, Users, Camera, Check, X, Eye, Clock,
+  Loader2, AlertCircle, ChevronDown, ChevronUp, Settings
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { AdminModelsManager } from "@/components/bellas/admin/AdminModelsManager";
 
 interface PendingModel {
   id: string;
@@ -48,7 +49,7 @@ interface PendingPhoto {
 
 export function AdminDashboard() {
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState<"models" | "photos">("models");
+  const [activeTab, setActiveTab] = useState<"models" | "photos" | "management">("models");
   const [pendingModels, setPendingModels] = useState<PendingModel[]>([]);
   const [pendingPhotos, setPendingPhotos] = useState<PendingPhoto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -65,12 +66,12 @@ export function AdminDashboard() {
         fetch("/api/admin/pending-models"),
         fetch("/api/admin/pending-photos"),
       ]);
-      
+
       if (modelsRes.ok) {
         const models = await modelsRes.json();
         setPendingModels(models);
       }
-      
+
       if (photosRes.ok) {
         const photos = await photosRes.json();
         setPendingPhotos(photos);
@@ -89,14 +90,14 @@ export function AdminDashboard() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ type: "profile" }),
       });
-      
+
       if (!response.ok) throw new Error("Error al aprobar");
-      
+
       toast({
         title: "Modelo aprobada",
         description: "El perfil ahora es visible públicamente.",
       });
-      
+
       fetchData();
     } catch (error) {
       toast({
@@ -114,14 +115,14 @@ export function AdminDashboard() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ type: "profile" }),
       });
-      
+
       if (!response.ok) throw new Error("Error al rechazar");
-      
+
       toast({
         title: "Modelo rechazada",
         description: "El perfil ha sido rechazado.",
       });
-      
+
       fetchData();
     } catch (error) {
       toast({
@@ -139,14 +140,14 @@ export function AdminDashboard() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ type: "photo" }),
       });
-      
+
       if (!response.ok) throw new Error("Error al aprobar");
-      
+
       toast({
         title: "Foto aprobada",
         description: "La foto ahora es visible públicamente.",
       });
-      
+
       fetchData();
     } catch (error) {
       toast({
@@ -164,14 +165,14 @@ export function AdminDashboard() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ type: "photo" }),
       });
-      
+
       if (!response.ok) throw new Error("Error al rechazar");
-      
+
       toast({
         title: "Foto rechazada",
         description: "La foto ha sido rechazada.",
       });
-      
+
       fetchData();
     } catch (error) {
       toast({
@@ -229,14 +230,14 @@ export function AdminDashboard() {
         </motion.div>
 
         {/* Tabs */}
-        <div className="flex space-x-2 mb-6">
+        <div className="flex flex-wrap gap-2 mb-6">
           <Button
             variant={activeTab === "models" ? "default" : "outline"}
             onClick={() => setActiveTab("models")}
             className={activeTab === "models" ? "bg-gold-500 text-black" : "border-gold-500/30 text-gray-300"}
           >
             <Users className="w-4 h-4 mr-2" />
-            Modelos ({pendingModels.length})
+            Pendientes ({pendingModels.length})
           </Button>
           <Button
             variant={activeTab === "photos" ? "default" : "outline"}
@@ -245,6 +246,14 @@ export function AdminDashboard() {
           >
             <Camera className="w-4 h-4 mr-2" />
             Fotos ({pendingPhotos.length})
+          </Button>
+          <Button
+            variant={activeTab === "management" ? "default" : "outline"}
+            onClick={() => setActiveTab("management")}
+            className={activeTab === "management" ? "bg-gold-500 text-black" : "border-gold-500/30 text-gray-300"}
+          >
+            <Settings className="w-4 h-4 mr-2" />
+            Gestión
           </Button>
         </div>
 
@@ -468,6 +477,17 @@ export function AdminDashboard() {
                   ))}
                 </div>
               )}
+            </motion.div>
+          )}
+
+          {activeTab === "management" && (
+            <motion.div
+              key="management"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+            >
+              <AdminModelsManager />
             </motion.div>
           )}
         </AnimatePresence>

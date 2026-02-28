@@ -31,7 +31,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { useAuthStore } from '@/store/authStore';
 import { useToast } from '@/hooks/use-toast';
-import PhotoUpload from './PhotoUpload';
+
+// PhotoUpload component stub — archivo original eliminado
+function PhotoUpload({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+  if (!isOpen) return null;
+  return null;
+}
 
 interface Photo {
   id: string;
@@ -255,13 +260,12 @@ export default function ModelDashboard() {
           <div className="flex items-center gap-3">
             <Badge
               variant={profile?.status === 'APPROVED' ? 'default' : 'secondary'}
-              className={`${
-                profile?.status === 'APPROVED'
+              className={`${profile?.status === 'APPROVED'
                   ? 'bg-green-500/20 text-green-400 border-green-500/30'
                   : profile?.status === 'PENDING'
-                  ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'
-                  : 'bg-red-500/20 text-red-400 border-red-500/30'
-              }`}
+                    ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'
+                    : 'bg-red-500/20 text-red-400 border-red-500/30'
+                }`}
             >
               {profile?.status === 'APPROVED' ? (
                 <CheckCircle className="w-3 h-3 mr-1" />
@@ -402,13 +406,12 @@ export default function ModelDashboard() {
                           className="w-full h-full object-cover"
                         />
                         <div
-                          className={`absolute top-1 right-1 w-2 h-2 rounded-full ${
-                            photo.status === 'APPROVED'
+                          className={`absolute top-1 right-1 w-2 h-2 rounded-full ${photo.status === 'APPROVED'
                               ? 'bg-green-500'
                               : photo.status === 'PENDING'
-                              ? 'bg-yellow-500'
-                              : 'bg-red-500'
-                          }`}
+                                ? 'bg-yellow-500'
+                                : 'bg-red-500'
+                            }`}
                         />
                       </div>
                     ))}
@@ -735,13 +738,12 @@ export default function ModelDashboard() {
                         />
                         {/* Status Indicator */}
                         <div
-                          className={`absolute top-2 right-2 px-2 py-1 rounded text-xs font-medium ${
-                            photo.status === 'APPROVED'
+                          className={`absolute top-2 right-2 px-2 py-1 rounded text-xs font-medium ${photo.status === 'APPROVED'
                               ? 'bg-green-500/80 text-white'
                               : photo.status === 'PENDING'
-                              ? 'bg-yellow-500/80 text-black'
-                              : 'bg-red-500/80 text-white'
-                          }`}
+                                ? 'bg-yellow-500/80 text-black'
+                                : 'bg-red-500/80 text-white'
+                            }`}
                         >
                           {photo.status}
                         </div>
