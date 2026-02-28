@@ -80,5 +80,5 @@ EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-# Run migrations and start the application
-CMD ["sh", "-c", "prisma migrate deploy --schema=./prisma/schema.prisma && node server.js"]
+# Run migrations (non-blocking) and start the application
+CMD ["sh", "-c", "prisma migrate deploy --schema=./prisma/schema.prisma || echo 'Warning: Migration failed, starting app anyway'; node server.js"]
