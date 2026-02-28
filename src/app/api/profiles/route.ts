@@ -4,27 +4,27 @@ import { getCurrentUser } from "@/lib/auth";
 import { z } from "zod";
 
 const profileUpdateSchema = z.object({
-  artisticName: z.string().optional(),
-  bio: z.string().optional(),
-  birthDate: z.string().optional(),
-  nationality: z.string().optional(),
-  location: z.string().optional(),
-  height: z.number().optional(),
-  weight: z.number().optional(),
-  eyeColor: z.string().optional(),
-  hairColor: z.string().optional(),
-  skinTone: z.string().optional(),
-  measurements: z.string().optional(),
-  shoeSize: z.number().optional(),
-  hobbies: z.string().optional(),
-  languages: z.string().optional(),
-  skills: z.string().optional(),
-  experience: z.string().optional(),
-  specialties: z.string().optional(),
-  availability: z.string().optional(),
-  instagram: z.string().optional(),
-  twitter: z.string().optional(),
-  tiktok: z.string().optional(),
+  artisticName: z.string().nullish(),
+  bio: z.string().nullish(),
+  birthDate: z.string().nullish(),
+  nationality: z.string().nullish(),
+  location: z.string().nullish(),
+  height: z.number().nullish(),
+  weight: z.number().nullish(),
+  eyeColor: z.string().nullish(),
+  hairColor: z.string().nullish(),
+  skinTone: z.string().nullish(),
+  measurements: z.string().nullish(),
+  shoeSize: z.number().nullish(),
+  hobbies: z.string().nullish(),
+  languages: z.string().nullish(),
+  skills: z.string().nullish(),
+  experience: z.string().nullish(),
+  specialties: z.string().nullish(),
+  availability: z.string().nullish(),
+  instagram: z.string().nullish(),
+  twitter: z.string().nullish(),
+  tiktok: z.string().nullish(),
 });
 
 // GET /api/profiles - Get current user's profile
@@ -109,7 +109,7 @@ export async function PUT(request: NextRequest) {
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: error.errors[0].message },
+        { error: error.errors?.[0]?.message || "Datos inválidos" },
         { status: 400 }
       );
     }

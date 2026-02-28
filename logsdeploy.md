@@ -1,93 +1,35 @@
-Error: Cannot find module 'effect'
-Require stack:
-- /app/node_modules/@prisma/config/dist/index.js
-- /app/node_modules/prisma/build/index.js
-at Function._resolveFilename (node:internal/modules/cjs/loader:1383:15)
-at defaultResolveImpl (node:internal/modules/cjs/loader:1025:19)
-at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1030:22)
-at Function._load (node:internal/modules/cjs/loader:1192:37)
-at TracingChannel.traceSync (node:diagnostics_channel:328:14)
-at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)
-at Module.require (node:internal/modules/cjs/loader:1463:12)
-at require (node:internal/modules/helpers:147:16)
-at Object. (/app/node_modules/@prisma/config/dist/index.js:361:22)
-at Module._compile (node:internal/modules/cjs/loader:1706:14) {
-code: 'MODULE_NOT_FOUND',
-requireStack: [
-'/app/node_modules/@prisma/config/dist/index.js',
-'/app/node_modules/prisma/build/index.js'
-]
-}
-Node.js v22.22.0
-node:internal/modules/cjs/loader:1386
-throw err;
-^
-Error: Cannot find module 'effect'
-Require stack:
-- /app/node_modules/@prisma/config/dist/index.js
-- /app/node_modules/prisma/build/index.js
-at Function._resolveFilename (node:internal/modules/cjs/loader:1383:15)
-at defaultResolveImpl (node:internal/modules/cjs/loader:1025:19)
-at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1030:22)
-at Function._load (node:internal/modules/cjs/loader:1192:37)
-at TracingChannel.traceSync (node:diagnostics_channel:328:14)
-at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)
-at Module.require (node:internal/modules/cjs/loader:1463:12)
-at require (node:internal/modules/helpers:147:16)
-at Object. (/app/node_modules/@prisma/config/dist/index.js:361:22)
-at Module._compile (node:internal/modules/cjs/loader:1706:14) {
-code: 'MODULE_NOT_FOUND',
-requireStack: [
-'/app/node_modules/@prisma/config/dist/index.js',
-'/app/node_modules/prisma/build/index.js'
-]
-}
-Node.js v22.22.0
-node:internal/modules/cjs/loader:1386
-throw err;
-^
-Error: Cannot find module 'effect'
-Require stack:
-- /app/node_modules/@prisma/config/dist/index.js
-- /app/node_modules/prisma/build/index.js
-at Function._resolveFilename (node:internal/modules/cjs/loader:1383:15)
-at defaultResolveImpl (node:internal/modules/cjs/loader:1025:19)
-at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1030:22)
-at Function._load (node:internal/modules/cjs/loader:1192:37)
-at TracingChannel.traceSync (node:diagnostics_channel:328:14)
-at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)
-at Module.require (node:internal/modules/cjs/loader:1463:12)
-at require (node:internal/modules/helpers:147:16)
-at Object. (/app/node_modules/@prisma/config/dist/index.js:361:22)
-at Module._compile (node:internal/modules/cjs/loader:1706:14) {
-code: 'MODULE_NOT_FOUND',
-requireStack: [
-'/app/node_modules/@prisma/config/dist/index.js',
-'/app/node_modules/prisma/build/index.js'
-]
-}
-Node.js v22.22.0
-node:internal/modules/cjs/loader:1386
-throw err;
-^
-Error: Cannot find module 'effect'
-Require stack:
-- /app/node_modules/@prisma/config/dist/index.js
-- /app/node_modules/prisma/build/index.js
-at Function._resolveFilename (node:internal/modules/cjs/loader:1383:15)
-at defaultResolveImpl (node:internal/modules/cjs/loader:1025:19)
-at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1030:22)
-at Function._load (node:internal/modules/cjs/loader:1192:37)
-at TracingChannel.traceSync (node:diagnostics_channel:328:14)
-at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)
-at Module.require (node:internal/modules/cjs/loader:1463:12)
-at require (node:internal/modules/helpers:147:16)
-at Object. (/app/node_modules/@prisma/config/dist/index.js:361:22)
-at Module._compile (node:internal/modules/cjs/loader:1706:14) {
-code: 'MODULE_NOT_FOUND',
-requireStack: [
-'/app/node_modules/@prisma/config/dist/index.js',
-'/app/node_modules/prisma/build/index.js'
-]
-}
-Node.js v22.22.0
+Prisma schema loaded from prisma/schema.prisma
+Datasource "db": PostgreSQL database "postgres", schema "public" at "supabase-db-ws4cwskgkwowo08c00kkoscg:5432"
+1 migration found in prisma/migrations
+No pending migrations to apply.
+▲ Next.js 16.1.3
+- Local:         http://localhost:3000
+- Network:       http://0.0.0.0:3000
+✓ Starting...
+✓ Ready in 120ms
+prisma:query SELECT "public"."users"."id", "public"."users"."email", "public"."users"."password", "public"."users"."name", "public"."users"."role"::text, "public"."users"."image", "public"."users"."createdAt", "public"."users"."updatedAt" FROM "public"."users" WHERE ("public"."users"."id" = $1 AND 1=1) LIMIT $2 OFFSET $3
+prisma:query SELECT "public"."profiles"."id", "public"."profiles"."userId", "public"."profiles"."artisticName", "public"."profiles"."bio", "public"."profiles"."birthDate", "public"."profiles"."nationality", "public"."profiles"."location", "public"."profiles"."height", "public"."profiles"."weight", "public"."profiles"."eyeColor", "public"."profiles"."hairColor", "public"."profiles"."skinTone", "public"."profiles"."measurements", "public"."profiles"."shoeSize", "public"."profiles"."hobbies", "public"."profiles"."languages", "public"."profiles"."skills", "public"."profiles"."experience", "public"."profiles"."specialties", "public"."profiles"."availability", "public"."profiles"."instagram", "public"."profiles"."twitter", "public"."profiles"."tiktok", "public"."profiles"."status"::text, "public"."profiles"."featured", "public"."profiles"."views", "public"."profiles"."createdAt", "public"."profiles"."updatedAt", "public"."profiles"."approvedAt" FROM "public"."profiles" WHERE "public"."profiles"."userId" IN ($1) OFFSET $2
+prisma:query SELECT "public"."profiles"."id", "public"."profiles"."userId", "public"."profiles"."artisticName", "public"."profiles"."bio", "public"."profiles"."birthDate", "public"."profiles"."nationality", "public"."profiles"."location", "public"."profiles"."height", "public"."profiles"."weight", "public"."profiles"."eyeColor", "public"."profiles"."hairColor", "public"."profiles"."skinTone", "public"."profiles"."measurements", "public"."profiles"."shoeSize", "public"."profiles"."hobbies", "public"."profiles"."languages", "public"."profiles"."skills", "public"."profiles"."experience", "public"."profiles"."specialties", "public"."profiles"."availability", "public"."profiles"."instagram", "public"."profiles"."twitter", "public"."profiles"."tiktok", "public"."profiles"."status"::text, "public"."profiles"."featured", "public"."profiles"."views", "public"."profiles"."createdAt", "public"."profiles"."updatedAt", "public"."profiles"."approvedAt" FROM "public"."profiles" WHERE "public"."profiles"."status" = CAST($1::text AS "public"."ProfileStatus") ORDER BY "public"."profiles"."featured" DESC OFFSET $2
+prisma:query SELECT "public"."users"."id", "public"."users"."email", "public"."users"."password", "public"."users"."name", "public"."users"."role"::text, "public"."users"."image", "public"."users"."createdAt", "public"."users"."updatedAt" FROM "public"."users" WHERE ("public"."users"."id" = $1 AND 1=1) LIMIT $2 OFFSET $3
+prisma:query SELECT "public"."profiles"."id", "public"."profiles"."userId", "public"."profiles"."artisticName", "public"."profiles"."bio", "public"."profiles"."birthDate", "public"."profiles"."nationality", "public"."profiles"."location", "public"."profiles"."height", "public"."profiles"."weight", "public"."profiles"."eyeColor", "public"."profiles"."hairColor", "public"."profiles"."skinTone", "public"."profiles"."measurements", "public"."profiles"."shoeSize", "public"."profiles"."hobbies", "public"."profiles"."languages", "public"."profiles"."skills", "public"."profiles"."experience", "public"."profiles"."specialties", "public"."profiles"."availability", "public"."profiles"."instagram", "public"."profiles"."twitter", "public"."profiles"."tiktok", "public"."profiles"."status"::text, "public"."profiles"."featured", "public"."profiles"."views", "public"."profiles"."createdAt", "public"."profiles"."updatedAt", "public"."profiles"."approvedAt" FROM "public"."profiles" WHERE "public"."profiles"."userId" IN ($1) OFFSET $2
+prisma:query SELECT "public"."profiles"."id", "public"."profiles"."userId", "public"."profiles"."artisticName", "public"."profiles"."bio", "public"."profiles"."birthDate", "public"."profiles"."nationality", "public"."profiles"."location", "public"."profiles"."height", "public"."profiles"."weight", "public"."profiles"."eyeColor", "public"."profiles"."hairColor", "public"."profiles"."skinTone", "public"."profiles"."measurements", "public"."profiles"."shoeSize", "public"."profiles"."hobbies", "public"."profiles"."languages", "public"."profiles"."skills", "public"."profiles"."experience", "public"."profiles"."specialties", "public"."profiles"."availability", "public"."profiles"."instagram", "public"."profiles"."twitter", "public"."profiles"."tiktok", "public"."profiles"."status"::text, "public"."profiles"."featured", "public"."profiles"."views", "public"."profiles"."createdAt", "public"."profiles"."updatedAt", "public"."profiles"."approvedAt" FROM "public"."profiles" WHERE ("public"."profiles"."userId" = $1 AND 1=1) LIMIT $2 OFFSET $3
+prisma:query SELECT "public"."photos"."id", "public"."photos"."profileId", "public"."photos"."uploaderId", "public"."photos"."url", "public"."photos"."publicId", "public"."photos"."filename", "public"."photos"."mimeType", "public"."photos"."size", "public"."photos"."title", "public"."photos"."description", "public"."photos"."category", "public"."photos"."isProfilePhoto", "public"."photos"."order", "public"."photos"."status"::text, "public"."photos"."rejectionReason", "public"."photos"."uploadedAt", "public"."photos"."approvedAt" FROM "public"."photos" WHERE "public"."photos"."profileId" IN ($1) ORDER BY "public"."photos"."order" ASC OFFSET $2
+prisma:query SELECT 1
+prisma:query SELECT "public"."users"."id", "public"."users"."email", "public"."users"."password", "public"."users"."name", "public"."users"."role"::text, "public"."users"."image", "public"."users"."createdAt", "public"."users"."updatedAt" FROM "public"."users" WHERE ("public"."users"."id" = $1 AND 1=1) LIMIT $2 OFFSET $3
+prisma:query SELECT "public"."profiles"."id", "public"."profiles"."userId", "public"."profiles"."artisticName", "public"."profiles"."bio", "public"."profiles"."birthDate", "public"."profiles"."nationality", "public"."profiles"."location", "public"."profiles"."height", "public"."profiles"."weight", "public"."profiles"."eyeColor", "public"."profiles"."hairColor", "public"."profiles"."skinTone", "public"."profiles"."measurements", "public"."profiles"."shoeSize", "public"."profiles"."hobbies", "public"."profiles"."languages", "public"."profiles"."skills", "public"."profiles"."experience", "public"."profiles"."specialties", "public"."profiles"."availability", "public"."profiles"."instagram", "public"."profiles"."twitter", "public"."profiles"."tiktok", "public"."profiles"."status"::text, "public"."profiles"."featured", "public"."profiles"."views", "public"."profiles"."createdAt", "public"."profiles"."updatedAt", "public"."profiles"."approvedAt" FROM "public"."profiles" WHERE "public"."profiles"."userId" IN ($1) OFFSET $2
+prisma:query SELECT "public"."profiles"."id", "public"."profiles"."userId", "public"."profiles"."artisticName", "public"."profiles"."bio", "public"."profiles"."birthDate", "public"."profiles"."nationality", "public"."profiles"."location", "public"."profiles"."height", "public"."profiles"."weight", "public"."profiles"."eyeColor", "public"."profiles"."hairColor", "public"."profiles"."skinTone", "public"."profiles"."measurements", "public"."profiles"."shoeSize", "public"."profiles"."hobbies", "public"."profiles"."languages", "public"."profiles"."skills", "public"."profiles"."experience", "public"."profiles"."specialties", "public"."profiles"."availability", "public"."profiles"."instagram", "public"."profiles"."twitter", "public"."profiles"."tiktok", "public"."profiles"."status"::text, "public"."profiles"."featured", "public"."profiles"."views", "public"."profiles"."createdAt", "public"."profiles"."updatedAt", "public"."profiles"."approvedAt" FROM "public"."profiles" WHERE ("public"."profiles"."userId" = $1 AND 1=1) LIMIT $2 OFFSET $3
+prisma:query SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."photos"."id" FROM "public"."photos" WHERE "public"."photos"."profileId" = $1 OFFSET $2) AS "sub"
+prisma:query INSERT INTO "public"."photos" ("id","profileId","uploaderId","url","filename","mimeType","size","isProfilePhoto","order","status","uploadedAt") VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,CAST($10::text AS "public"."PhotoStatus"),$11) RETURNING "public"."photos"."id", "public"."photos"."profileId", "public"."photos"."uploaderId", "public"."photos"."url", "public"."photos"."publicId", "public"."photos"."filename", "public"."photos"."mimeType", "public"."photos"."size", "public"."photos"."title", "public"."photos"."description", "public"."photos"."category", "public"."photos"."isProfilePhoto", "public"."photos"."order", "public"."photos"."status"::text, "public"."photos"."rejectionReason", "public"."photos"."uploadedAt", "public"."photos"."approvedAt"
+prisma:query SELECT "public"."users"."id", "public"."users"."email", "public"."users"."password", "public"."users"."name", "public"."users"."role"::text, "public"."users"."image", "public"."users"."createdAt", "public"."users"."updatedAt" FROM "public"."users" WHERE ("public"."users"."id" = $1 AND 1=1) LIMIT $2 OFFSET $3
+prisma:query SELECT "public"."profiles"."id", "public"."profiles"."userId", "public"."profiles"."artisticName", "public"."profiles"."bio", "public"."profiles"."birthDate", "public"."profiles"."nationality", "public"."profiles"."location", "public"."profiles"."height", "public"."profiles"."weight", "public"."profiles"."eyeColor", "public"."profiles"."hairColor", "public"."profiles"."skinTone", "public"."profiles"."measurements", "public"."profiles"."shoeSize", "public"."profiles"."hobbies", "public"."profiles"."languages", "public"."profiles"."skills", "public"."profiles"."experience", "public"."profiles"."specialties", "public"."profiles"."availability", "public"."profiles"."instagram", "public"."profiles"."twitter", "public"."profiles"."tiktok", "public"."profiles"."status"::text, "public"."profiles"."featured", "public"."profiles"."views", "public"."profiles"."createdAt", "public"."profiles"."updatedAt", "public"."profiles"."approvedAt" FROM "public"."profiles" WHERE "public"."profiles"."userId" IN ($1) OFFSET $2
+prisma:query SELECT "public"."profiles"."id", "public"."profiles"."userId", "public"."profiles"."artisticName", "public"."profiles"."bio", "public"."profiles"."birthDate", "public"."profiles"."nationality", "public"."profiles"."location", "public"."profiles"."height", "public"."profiles"."weight", "public"."profiles"."eyeColor", "public"."profiles"."hairColor", "public"."profiles"."skinTone", "public"."profiles"."measurements", "public"."profiles"."shoeSize", "public"."profiles"."hobbies", "public"."profiles"."languages", "public"."profiles"."skills", "public"."profiles"."experience", "public"."profiles"."specialties", "public"."profiles"."availability", "public"."profiles"."instagram", "public"."profiles"."twitter", "public"."profiles"."tiktok", "public"."profiles"."status"::text, "public"."profiles"."featured", "public"."profiles"."views", "public"."profiles"."createdAt", "public"."profiles"."updatedAt", "public"."profiles"."approvedAt" FROM "public"."profiles" WHERE ("public"."profiles"."userId" = $1 AND 1=1) LIMIT $2 OFFSET $3
+prisma:query SELECT "public"."photos"."id", "public"."photos"."profileId", "public"."photos"."uploaderId", "public"."photos"."url", "public"."photos"."publicId", "public"."photos"."filename", "public"."photos"."mimeType", "public"."photos"."size", "public"."photos"."title", "public"."photos"."description", "public"."photos"."category", "public"."photos"."isProfilePhoto", "public"."photos"."order", "public"."photos"."status"::text, "public"."photos"."rejectionReason", "public"."photos"."uploadedAt", "public"."photos"."approvedAt" FROM "public"."photos" WHERE "public"."photos"."profileId" IN ($1) ORDER BY "public"."photos"."order" ASC OFFSET $2
+prisma:query SELECT 1
+prisma:query SELECT "public"."users"."id", "public"."users"."email", "public"."users"."password", "public"."users"."name", "public"."users"."role"::text, "public"."users"."image", "public"."users"."createdAt", "public"."users"."updatedAt" FROM "public"."users" WHERE ("public"."users"."id" = $1 AND 1=1) LIMIT $2 OFFSET $3
+prisma:query SELECT "public"."profiles"."id", "public"."profiles"."userId", "public"."profiles"."artisticName", "public"."profiles"."bio", "public"."profiles"."birthDate", "public"."profiles"."nationality", "public"."profiles"."location", "public"."profiles"."height", "public"."profiles"."weight", "public"."profiles"."eyeColor", "public"."profiles"."hairColor", "public"."profiles"."skinTone", "public"."profiles"."measurements", "public"."profiles"."shoeSize", "public"."profiles"."hobbies", "public"."profiles"."languages", "public"."profiles"."skills", "public"."profiles"."experience", "public"."profiles"."specialties", "public"."profiles"."availability", "public"."profiles"."instagram", "public"."profiles"."twitter", "public"."profiles"."tiktok", "public"."profiles"."status"::text, "public"."profiles"."featured", "public"."profiles"."views", "public"."profiles"."createdAt", "public"."profiles"."updatedAt", "public"."profiles"."approvedAt" FROM "public"."profiles" WHERE "public"."profiles"."userId" IN ($1) OFFSET $2
+prisma:query SELECT "public"."profiles"."id", "public"."profiles"."userId", "public"."profiles"."artisticName", "public"."profiles"."bio", "public"."profiles"."birthDate", "public"."profiles"."nationality", "public"."profiles"."location", "public"."profiles"."height", "public"."profiles"."weight", "public"."profiles"."eyeColor", "public"."profiles"."hairColor", "public"."profiles"."skinTone", "public"."profiles"."measurements", "public"."profiles"."shoeSize", "public"."profiles"."hobbies", "public"."profiles"."languages", "public"."profiles"."skills", "public"."profiles"."experience", "public"."profiles"."specialties", "public"."profiles"."availability", "public"."profiles"."instagram", "public"."profiles"."twitter", "public"."profiles"."tiktok", "public"."profiles"."status"::text, "public"."profiles"."featured", "public"."profiles"."views", "public"."profiles"."createdAt", "public"."profiles"."updatedAt", "public"."profiles"."approvedAt" FROM "public"."profiles" WHERE ("public"."profiles"."userId" = $1 AND 1=1) LIMIT $2 OFFSET $3
+⨯ TypeError: Cannot read properties of undefined (reading '0')
+at C (.next/server/chunks/[root-of-the-server]__a11d0a53._.js:1:3308)
+at async p (.next/server/chunks/[root-of-the-server]__a11d0a53._.js:1:6443)
+at async l (.next/server/chunks/[root-of-the-server]__a11d0a53._.js:1:7484)
+at async Module.k (.next/server/chunks/[root-of-the-server]__a11d0a53._.js:1:8562)
