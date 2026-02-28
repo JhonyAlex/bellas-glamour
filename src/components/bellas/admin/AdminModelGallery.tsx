@@ -4,7 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
     Check, X, Trash2, Loader2, AlertCircle, Eye,
-    ImageOff, ZoomIn, Upload,
+    ImageOff, ZoomIn, Upload, Image as ImageIcon, Star,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -36,6 +36,11 @@ export function AdminModelGallery({ profileId, photos, modelName }: AdminModelGa
     const [lightboxPhoto, setLightboxPhoto] = useState<AdminPhoto | null>(null);
     const [loadingPhotoId, setLoadingPhotoId] = useState<string | null>(null);
     const [uploadOpen, setUploadOpen] = useState(false);
+    const [sliderLoadingId, setSliderLoadingId] = useState<string | null>(null);
+    const [profilePhotoLoadingId, setProfilePhotoLoadingId] = useState<string | null>(null);
+
+    // Mapa local para rastrear fotos añadidas al slider en esta sesión
+    const [addedToSlider, setAddedToSlider] = useState<Set<string>>(new Set());
 
     const handleStatusChange = async (photoId: string, status: "APPROVED" | "REJECTED") => {
         setLoadingPhotoId(photoId);
@@ -74,6 +79,60 @@ export function AdminModelGallery({ profileId, photos, modelName }: AdminModelGa
             });
         } finally {
             setLoadingPhotoId(null);
+        }
+    };
+
+    const handleAddToSlider = async (photoId: string) => {
+        setSliderLoadingId(photoId);
+        try {
+            const res = await fetch("/api/admin/slider", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ photoId }),
+            });
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                throw new Error(err.error || "Error al agregar al slider");
+            }
+            setAddedToSlider((prev) => new Set(prev).add(photoId));
+            toast({
+                title: "Agregada al slider",
+                description: "La foto ahora aparecerá en el slider del home.",
+            });
+        } catch (error) {
+            toast({
+                title: "Error",
+                description: error instanceof Error ? error.message : "No se pudo agregar al slider.",
+                variant: "destructive",
+            });
+        } finally {
+            setSliderLoadingId(null);
+        }
+    };
+
+    const handleSetProfilePhoto = async (photoId: string) => {
+        setProfilePhotoLoadingId(photoId);
+        try {
+            const res = await fetch(`/api/photos/${photoId}/profile-photo`, {
+                method: "PATCH",
+            });
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                throw new Error(err.error || "Error al establecer foto principal");
+            }
+            toast({
+                title: "Foto principal actualizada",
+                description: "La foto ha sido marcada como foto de perfil.",
+            });
+            window.location.reload();
+        } catch (error) {
+            toast({
+                title: "Error",
+                description: error instanceof Error ? error.message : "No se pudo establecer la foto principal.",
+                variant: "destructive",
+            });
+        } finally {
+            setProfilePhotoLoadingId(null);
         }
     };
 
@@ -236,6 +295,49 @@ export function AdminModelGallery({ profileId, photos, modelName }: AdminModelGa
                                     <span className="bg-gold-500 text-black text-[10px] font-bold px-2 py-0.5 rounded">
                                         PERFIL
                                     </span>
+                                </div>
+                            )}
+
+                            {/* Indicador de slider */}
+                            {(photo.isSliderPhoto || addedToSlider.has(photo.id)) && (
+                                <div className="absolute bottom-2 left-2 z-10">
+                                    <span className="bg-blue-500 text-white text-[10px] font-bold px-2 py-0.5 rounded">
+                                        SLIDER
+                                    </span>
+                                </div>
+                            )}
+
+                            {/* Botones de slider y foto principal (solo fotos aprobadas) */}
+                            {photo.status === "APPROVED" && (
+                                <div className="absolute top-2 right-2 z-10 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    {!photo.isSliderPhoto && !addedToSlider.has(photo.id) && (
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); handleAddToSlider(photo.id); }}
+                                            disabled={sliderLoadingId === photo.id}
+                                            className="bg-blue-500/80 hover:bg-blue-500 text-white p-1.5 rounded transition-colors"
+                                            title="Agregar al Slider"
+                                        >
+                                            {sliderLoadingId === photo.id ? (
+                                                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                            ) : (
+                                                <ImageIcon className="w-3.5 h-3.5" />
+                                            )}
+                                        </button>
+                                    )}
+                                    {!photo.isProfilePhoto && (
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); handleSetProfilePhoto(photo.id); }}
+                                            disabled={profilePhotoLoadingId === photo.id}
+                                            className="bg-gold-500/80 hover:bg-gold-500 text-black p-1.5 rounded transition-colors"
+                                            title="Marcar como Principal"
+                                        >
+                                            {profilePhotoLoadingId === photo.id ? (
+                                                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                            ) : (
+                                                <Star className="w-3.5 h-3.5" />
+                                            )}
+                                        </button>
+                                    )}
                                 </div>
                             )}
                         </motion.div>

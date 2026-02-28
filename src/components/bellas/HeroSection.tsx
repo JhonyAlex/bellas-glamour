@@ -32,18 +32,38 @@ const heroSlides = [
 
 export function HeroSection({ onJoinClick }: HeroSectionProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [slides, setSlides] = useState(heroSlides);
+
+  useEffect(() => {
+    // Fetch dynamic slider photos
+    const fetchSliderPhotos = async () => {
+      try {
+        const response = await fetch("/api/slider");
+        if (response.ok) {
+          const data = await response.json();
+          if (data && data.length > 0) {
+            setSlides(data);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching slider photos:", error);
+      }
+    };
+
+    fetchSliderPhotos();
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
     }, 5000);
     return () => clearInterval(timer);
-  }, []);
+  }, [slides.length]);
 
   return (
     <section id="inicio" className="relative h-screen overflow-hidden">
       {/* Background Slides */}
-      {heroSlides.map((slide, index) => (
+      {slides.map((slide, index) => (
         <motion.div
           key={slide.id}
           initial={{ opacity: 0, scale: 1.1 }}
@@ -64,7 +84,7 @@ export function HeroSection({ onJoinClick }: HeroSectionProps) {
 
       {/* Decorative Elements */}
       <div className="absolute inset-0 hero-pattern pointer-events-none" />
-      
+
       {/* Gold Lines */}
       <div className="absolute top-0 left-0 w-px h-full bg-gradient-to-b from-transparent via-gold-500/30 to-transparent" />
       <div className="absolute top-0 right-0 w-px h-full bg-gradient-to-b from-transparent via-gold-500/30 to-transparent" />
@@ -111,7 +131,7 @@ export function HeroSection({ onJoinClick }: HeroSectionProps) {
             transition={{ duration: 0.8 }}
             className="font-serif text-5xl md:text-7xl lg:text-8xl font-bold mb-4"
           >
-            <span className="text-gold-gradient">{heroSlides[currentSlide].title}</span>
+            <span className="text-gold-gradient">{slides[currentSlide]?.title}</span>
           </motion.h1>
 
           <motion.p
@@ -121,7 +141,7 @@ export function HeroSection({ onJoinClick }: HeroSectionProps) {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="text-xl md:text-2xl text-gray-300 tracking-[0.3em] uppercase mb-8"
           >
-            {heroSlides[currentSlide].subtitle}
+            {slides[currentSlide]?.subtitle}
           </motion.p>
 
           {/* Tagline */}
@@ -131,7 +151,7 @@ export function HeroSection({ onJoinClick }: HeroSectionProps) {
             transition={{ duration: 1, delay: 1.2 }}
             className="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto mb-4"
           >
-            Agencia de modelos premium exclusiva para adultos. 
+            Agencia de modelos premium exclusiva para adultos.
             Descubre el talento más sofisticado y elegante.
           </motion.p>
 
@@ -189,15 +209,14 @@ export function HeroSection({ onJoinClick }: HeroSectionProps) {
 
         {/* Slide Indicators */}
         <div className="absolute bottom-8 right-8 flex space-x-2">
-          {heroSlides.map((_, index) => (
+          {slides.map((_, index) => (
             <button
               key={index}
               onClick={() => setCurrentSlide(index)}
-              className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                currentSlide === index
+              className={`w-2 h-2 rounded-full transition-all duration-300 ${currentSlide === index
                   ? "bg-gold-400 w-8"
                   : "bg-gray-600 hover:bg-gray-500"
-              }`}
+                }`}
             />
           ))}
         </div>

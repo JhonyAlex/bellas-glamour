@@ -62,6 +62,7 @@ export interface AdminPhoto {
     description: string | null;
     category: string | null;
     isProfilePhoto: boolean;
+    isSliderPhoto: boolean;
     order: number;
     status: "PENDING" | "APPROVED" | "REJECTED";
     rejectionReason: string | null;

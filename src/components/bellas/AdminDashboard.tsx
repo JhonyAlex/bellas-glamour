@@ -4,11 +4,12 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Crown, Users, Camera, Check, X, Clock,
-  Loader2, ChevronDown, Settings, BarChart3
+  Loader2, ChevronDown, Settings, BarChart3, Image
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { AdminModelsManager } from "@/components/bellas/admin/AdminModelsManager";
+import { AdminSliderManager } from "@/components/bellas/admin/AdminSliderManager";
 
 interface PendingModel {
   id: string;
@@ -514,6 +515,20 @@ export function AdminDashboard() {
                 ))}
               </div>
             )}
+          </CollapsiblePanel>
+        </motion.div>
+
+        {/* ─── Panel: Slider del Home ─── */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.35 }}
+        >
+          <CollapsiblePanel
+            title="Slider del Home"
+            icon={Image}
+          >
+            <AdminSliderManager />
           </CollapsiblePanel>
         </motion.div>
 

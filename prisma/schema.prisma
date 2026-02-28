@@ -46,6 +46,7 @@ model User {
   // Relations
   profile   Profile?
   photos    Photo[]
+  sessions  Session[]
   
   @@map("users")
 }
@@ -125,6 +126,8 @@ model Photo {
   description     String?     // Descripción
   category        String?     // Categoría (portfolio, polaroid, etc.)
   isProfilePhoto  Boolean     @default(false)  // Es foto de perfil principal
+  isSliderPhoto   Boolean     @default(false)  // Seleccionada para el slider del home
+  sliderOrder     Int         @default(0)      // Orden en el slider del home
   order           Int         @default(0)      // Orden de aparición
   
   // Estado de moderación
@@ -148,6 +151,9 @@ model Session {
   token        String   @unique
   expiresAt    DateTime
   createdAt    DateTime @default(now())
+  
+  // Relations
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   
   @@map("sessions")
 }

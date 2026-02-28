@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import {
   Camera, Upload, Save, Loader2, User, Ruler, Eye,
-  MapPin, Instagram, Twitter, Trash2, AlertCircle, CheckCircle
+  MapPin, Instagram, Twitter, Trash2, AlertCircle, CheckCircle, Star
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -50,6 +50,7 @@ export function ModelDashboard() {
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [deletingPhotoId, setDeletingPhotoId] = useState<string | null>(null);
+  const [profilePhotoLoadingId, setProfilePhotoLoadingId] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
@@ -228,6 +229,40 @@ export function ModelDashboard() {
       });
     } finally {
       setDeletingPhotoId(null);
+    }
+  };
+
+  const handleSetProfilePhoto = async (photoId: string) => {
+    setProfilePhotoLoadingId(photoId);
+    try {
+      const response = await fetch(`/api/photos/${photoId}/profile-photo`, {
+        method: "PATCH",
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Error al establecer foto principal");
+      }
+
+      setPhotos((prev) =>
+        prev.map((p) => ({
+          ...p,
+          isProfilePhoto: p.id === photoId,
+        }))
+      );
+
+      toast({
+        title: "Foto principal actualizada",
+        description: "La foto ha sido marcada como perfil exitosamente.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "No se pudo establecer la foto principal.",
+        variant: "destructive",
+      });
+    } finally {
+      setProfilePhotoLoadingId(null);
     }
   };
 
@@ -572,6 +607,23 @@ export function ModelDashboard() {
                           </>
                         )}
                       </button>
+
+                      {!photo.isProfilePhoto && photo.status === "APPROVED" && (
+                        <button
+                          onClick={() => handleSetProfilePhoto(photo.id)}
+                          disabled={profilePhotoLoadingId === photo.id}
+                          className="inline-flex items-center text-xs text-gold-500 bg-gold-500/20 hover:bg-gold-500/40 px-2 py-1 rounded transition-colors"
+                        >
+                          {profilePhotoLoadingId === photo.id ? (
+                            <Loader2 className="w-3 h-3 animate-spin" />
+                          ) : (
+                            <>
+                              <Star className="w-3 h-3 mr-1" />
+                              Hacer Principal
+                            </>
+                          )}
+                        </button>
+                      )}
                     </div>
                     {photo.isProfilePhoto && (
                       <div className="absolute top-1 left-1 bg-gold-500 text-black text-xs font-bold px-2 py-0.5 rounded">
