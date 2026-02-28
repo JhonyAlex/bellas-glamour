@@ -68,8 +68,6 @@ COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/node_modules/@prisma/client ./node_modules/@prisma/client
 COPY --from=builder /app/node_modules/@prisma/engines ./node_modules/@prisma/engines
 COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
-COPY --from=builder /app/node_modules/@prisma/migrate ./node_modules/@prisma/migrate
-COPY --from=builder /app/node_modules/@prisma/schema-files-loader ./node_modules/@prisma/schema-files-loader
 
 # Copy Prisma schema and migrations
 COPY --from=builder /app/prisma ./prisma
@@ -82,4 +80,4 @@ ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
 # Run migrations and start the application
-CMD npx prisma migrate deploy && node server.js
+CMD ["sh", "-c", "npx prisma migrate deploy && node server.js"]
