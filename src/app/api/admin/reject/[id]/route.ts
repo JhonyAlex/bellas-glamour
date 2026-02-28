@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
+import { revalidatePublicData } from "@/lib/revalidate";
 
 // POST /api/admin/reject/[id] - Reject a profile or photo
 export async function POST(
@@ -9,19 +10,19 @@ export async function POST(
 ) {
   try {
     const admin = await requireAdmin(request);
-    
+
     if (!admin) {
       return NextResponse.json(
         { error: "No autorizado" },
         { status: 403 }
       );
     }
-    
+
     const { id } = await params;
     const body = await request.json().catch(() => ({}));
     const type = body.type as "profile" | "photo" | undefined;
     const reason = body.reason as string | undefined;
-    
+
     if (type === "photo") {
       const photo = await db.photo.update({
         where: { id },
@@ -30,6 +31,7 @@ export async function POST(
           rejectionReason: reason || "No especificada",
         },
       });
+      revalidatePublicData();
       return NextResponse.json(photo);
     } else {
       // Default: reject profile
@@ -39,6 +41,7 @@ export async function POST(
           status: "REJECTED",
         },
       });
+      revalidatePublicData();
       return NextResponse.json(profile);
     }
   } catch (error) {

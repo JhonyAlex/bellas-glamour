@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
 import { featuredToggleSchema } from "@/lib/admin-validations";
+import { revalidatePublicData } from "@/lib/revalidate";
 import { z } from "zod";
 
 // PATCH /api/admin/models/[id]/featured — Toggle destacado
@@ -41,6 +42,7 @@ export async function PATCH(
             },
         });
 
+        revalidatePublicData();
         return NextResponse.json(profile);
     } catch (error) {
         if (error instanceof z.ZodError) {
