@@ -4,7 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
     Check, X, Trash2, Loader2, AlertCircle, Eye,
-    ImageOff, ZoomIn,
+    ImageOff, ZoomIn, Upload,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,18 +21,21 @@ import {
     type AdminPhoto,
 } from "@/hooks/use-admin-models";
 import { StatusBadge } from "./AdminModelStatusControl";
+import { AdminPhotoUpload } from "./AdminPhotoUpload";
 
 interface AdminModelGalleryProps {
     profileId: string;
     photos: AdminPhoto[];
+    modelName: string;
 }
 
-export function AdminModelGallery({ profileId, photos }: AdminModelGalleryProps) {
+export function AdminModelGallery({ profileId, photos, modelName }: AdminModelGalleryProps) {
     const { toast } = useToast();
     const updateStatus = useUpdatePhotoStatus();
     const deletePhoto = useDeletePhoto();
     const [lightboxPhoto, setLightboxPhoto] = useState<AdminPhoto | null>(null);
     const [loadingPhotoId, setLoadingPhotoId] = useState<string | null>(null);
+    const [uploadOpen, setUploadOpen] = useState(false);
 
     const handleStatusChange = async (photoId: string, status: "APPROVED" | "REJECTED") => {
         setLoadingPhotoId(photoId);
@@ -76,10 +79,25 @@ export function AdminModelGallery({ profileId, photos }: AdminModelGalleryProps)
 
     if (photos.length === 0) {
         return (
-            <div className="text-center py-12 bg-card border border-gold-500/10 rounded-lg">
-                <ImageOff className="w-10 h-10 mx-auto text-gray-500 mb-3" />
-                <p className="text-gray-400 text-sm">No hay fotos en este perfil</p>
-            </div>
+            <>
+                <div className="text-center py-12 bg-card border border-gold-500/10 rounded-lg">
+                    <ImageOff className="w-10 h-10 mx-auto text-gray-500 mb-3" />
+                    <p className="text-gray-400 text-sm mb-4">No hay fotos en este perfil</p>
+                    <Button
+                        className="bg-gold-500 hover:bg-gold-600 text-black font-medium"
+                        onClick={() => setUploadOpen(true)}
+                    >
+                        <Upload className="w-4 h-4 mr-2" />
+                        Subir primera foto
+                    </Button>
+                </div>
+                <AdminPhotoUpload
+                    profileId={profileId}
+                    modelName={modelName}
+                    open={uploadOpen}
+                    onOpenChange={setUploadOpen}
+                />
+            </>
         );
     }
 
@@ -89,20 +107,30 @@ export function AdminModelGallery({ profileId, photos }: AdminModelGalleryProps)
 
     return (
         <div className="space-y-6">
-            {/* Estadísticas */}
-            <div className="flex flex-wrap gap-3 text-sm">
-                <span className="text-gray-400">
-                    Total: <span className="text-white font-medium">{photos.length}</span>
-                </span>
-                <span className="text-green-400">
-                    Aprobadas: <span className="font-medium">{approved.length}</span>
-                </span>
-                <span className="text-yellow-400">
-                    Pendientes: <span className="font-medium">{pending.length}</span>
-                </span>
-                <span className="text-red-400">
-                    Rechazadas: <span className="font-medium">{rejected.length}</span>
-                </span>
+            {/* Estadísticas + botón subir */}
+            <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex flex-wrap gap-3 text-sm">
+                    <span className="text-gray-400">
+                        Total: <span className="text-white font-medium">{photos.length}</span>
+                    </span>
+                    <span className="text-green-400">
+                        Aprobadas: <span className="font-medium">{approved.length}</span>
+                    </span>
+                    <span className="text-yellow-400">
+                        Pendientes: <span className="font-medium">{pending.length}</span>
+                    </span>
+                    <span className="text-red-400">
+                        Rechazadas: <span className="font-medium">{rejected.length}</span>
+                    </span>
+                </div>
+                <Button
+                    className="bg-gold-500 hover:bg-gold-600 text-black font-medium"
+                    size="sm"
+                    onClick={() => setUploadOpen(true)}
+                >
+                    <Upload className="w-4 h-4 mr-2" />
+                    Subir foto
+                </Button>
             </div>
 
             {/* Grid de fotos */}
@@ -240,6 +268,13 @@ export function AdminModelGallery({ profileId, photos }: AdminModelGalleryProps)
                     )}
                 </DialogContent>
             </Dialog>
+            {/* Upload Dialog */}
+            <AdminPhotoUpload
+                profileId={profileId}
+                modelName={modelName}
+                open={uploadOpen}
+                onOpenChange={setUploadOpen}
+            />
         </div>
     );
 }

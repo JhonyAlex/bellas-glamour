@@ -250,6 +250,46 @@ export function useDeletePhoto() {
     });
 }
 
+export function useUploadAdminPhoto() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: async ({
+            profileId,
+            file,
+            title,
+            category,
+            isProfilePhoto,
+        }: {
+            profileId: string;
+            file: File;
+            title?: string;
+            category?: string;
+            isProfilePhoto?: boolean;
+        }) => {
+            const formData = new FormData();
+            formData.append("file", file);
+            if (title) formData.append("title", title);
+            if (category) formData.append("category", category);
+            if (isProfilePhoto) formData.append("isProfilePhoto", "true");
+
+            const res = await fetch(`/api/admin/models/${profileId}/photos`, {
+                method: "POST",
+                body: formData,
+            });
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                throw new Error(err.error || "Error al subir foto");
+            }
+            return res.json();
+        },
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: ["admin-models"] });
+            queryClient.invalidateQueries({ queryKey: ["admin-model", variables.profileId] });
+        },
+    });
+}
+
 // ==================== EXPORTACIÓN ====================
 
 export function useExportModels() {

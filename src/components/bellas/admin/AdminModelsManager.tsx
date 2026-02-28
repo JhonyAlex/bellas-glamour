@@ -262,6 +262,7 @@ export function AdminModelsManager() {
                                     <AdminModelGallery
                                         profileId={detailData.id}
                                         photos={detailData.photos}
+                                        modelName={detailData.artisticName || detailData.user?.name || "Modelo"}
                                     />
                                 </div>
                             </div>
