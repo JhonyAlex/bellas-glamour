@@ -277,6 +277,26 @@ export function AdminModelEditDialog({
                             </TabsContent>
                         </Tabs>
 
+                        {/* Resumen de errores (visible desde cualquier tab) */}
+                        {Object.keys(errors).length > 0 && (
+                            <motion.div
+                                initial={{ opacity: 0, y: -4 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="bg-red-500/10 border border-red-500/30 rounded-lg p-3 text-sm"
+                            >
+                                <p className="text-red-400 font-medium mb-1">
+                                    ⚠️ {Object.keys(errors).length} {Object.keys(errors).length === 1 ? "error" : "errores"} de validación:
+                                </p>
+                                <ul className="text-red-400/80 text-xs space-y-0.5 list-disc list-inside">
+                                    {Object.entries(errors).map(([field, err]) => (
+                                        <li key={field}>
+                                            <span className="font-medium capitalize">{field}</span>: {(err as any)?.message || "valor inválido"}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </motion.div>
+                        )}
+
                         {/* Botones de acción */}
                         <div className="flex justify-end gap-3 pt-4 border-t border-gold-500/10">
                             <Button

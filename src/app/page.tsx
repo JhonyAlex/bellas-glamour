@@ -206,7 +206,7 @@ export default function BellasGlamourPage() {
                 initial={{ opacity: 0, x: 50 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
-                className="relative"
+                className="relative overflow-hidden"
               >
                 <div className="aspect-[4/5] relative rounded-lg overflow-hidden">
                   <img
@@ -216,10 +216,10 @@ export default function BellasGlamourPage() {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                 </div>
-                <div className="absolute -bottom-6 -left-6 bg-gold-500 p-6 rounded-lg">
-                  <Crown className="w-8 h-8 text-black mb-2" />
-                  <p className="text-black font-bold">Exclusividad</p>
-                  <p className="text-black/70 text-sm">para adultos</p>
+                <div className="absolute bottom-0 left-0 md:-bottom-6 md:-left-6 bg-gold-500 p-4 md:p-6 rounded-lg md:rounded-lg rounded-tl-none rounded-bl-none md:rounded-tl-lg">
+                  <Crown className="w-6 h-6 md:w-8 md:h-8 text-black mb-1 md:mb-2" />
+                  <p className="text-black font-bold text-sm md:text-base">Exclusividad</p>
+                  <p className="text-black/70 text-xs md:text-sm">para adultos</p>
                 </div>
               </motion.div>
             </div>

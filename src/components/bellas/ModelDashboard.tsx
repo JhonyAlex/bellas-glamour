@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { 
-  Camera, Upload, Save, Loader2, User, Ruler, Eye, 
+import {
+  Camera, Upload, Save, Loader2, User, Ruler, Eye,
   MapPin, Instagram, Twitter, Trash2, AlertCircle, CheckCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -43,14 +43,16 @@ export function ModelDashboard() {
   const { user, profile: storedProfile } = useAuthStore();
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  
+
   const [profile, setProfile] = useState<Profile | null>(null);
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [deletingPhotoId, setDeletingPhotoId] = useState<string | null>(null);
-  
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+
   // Form state
   const [formData, setFormData] = useState({
     artisticName: "",
@@ -78,7 +80,7 @@ export function ModelDashboard() {
         const data = await response.json();
         setProfile(data);
         setPhotos(data?.photos || []);
-        
+
         // Populate form
         if (data) {
           setFormData({
@@ -106,7 +108,9 @@ export function ModelDashboard() {
 
   const handleSaveProfile = async () => {
     setIsSaving(true);
-    
+    setSaveError(null);
+    setSaveSuccess(false);
+
     try {
       const response = await fetch("/api/profiles", {
         method: "PUT",
@@ -126,22 +130,28 @@ export function ModelDashboard() {
           twitter: formData.twitter || null,
         }),
       });
-      
+
       if (!response.ok) {
-        throw new Error("Error al guardar perfil");
+        const errorData = await response.json().catch(() => ({}));
+        const errorMsg = errorData.error || errorData.message || `Error del servidor (${response.status})`;
+        throw new Error(errorMsg);
       }
-      
+
       const updatedProfile = await response.json();
       setProfile(updatedProfile);
-      
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 4000);
+
       toast({
         title: "Perfil actualizado",
         description: "Tus cambios han sido guardados exitosamente.",
       });
     } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : "No se pudo guardar el perfil.";
+      setSaveError(errorMsg);
       toast({
         title: "Error",
-        description: "No se pudo guardar el perfil.",
+        description: errorMsg,
         variant: "destructive",
       });
     } finally {
@@ -152,30 +162,30 @@ export function ModelDashboard() {
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
-    
+
     setIsUploading(true);
-    
+
     try {
       for (const file of Array.from(files)) {
         const formData = new FormData();
         formData.append("file", file);
-        
+
         const response = await fetch("/api/photos/upload", {
           method: "POST",
           body: formData,
         });
-        
+
         if (!response.ok) {
           const error = await response.json();
           throw new Error(error.error || "Error al subir foto");
         }
       }
-      
+
       toast({
         title: "Fotos subidas",
         description: "Las fotos han sido enviadas para aprobación.",
       });
-      
+
       fetchProfile();
     } catch (error) {
       toast({
@@ -272,7 +282,7 @@ export function ModelDashboard() {
           <p className="text-gray-400">
             Gestiona tu información y fotos de portfolio
           </p>
-          
+
           {/* Status Badge */}
           {profile && (
             <div className="mt-4">
@@ -309,7 +319,7 @@ export function ModelDashboard() {
               <User className="w-5 h-5 mr-2 text-gold-400" />
               Información Personal
             </h3>
-            
+
             <div className="space-y-4">
               <div>
                 <Label htmlFor="artisticName">Nombre Artístico</Label>
@@ -321,7 +331,7 @@ export function ModelDashboard() {
                   className="bg-black/50 border-gold-500/30 focus:border-gold-500"
                 />
               </div>
-              
+
               <div>
                 <Label htmlFor="bio">Biografía</Label>
                 <Textarea
@@ -333,7 +343,7 @@ export function ModelDashboard() {
                   className="bg-black/50 border-gold-500/30 focus:border-gold-500"
                 />
               </div>
-              
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="height">Altura (cm)</Label>
@@ -358,7 +368,7 @@ export function ModelDashboard() {
                   />
                 </div>
               </div>
-              
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="eyeColor">Color de Ojos</Label>
@@ -381,7 +391,7 @@ export function ModelDashboard() {
                   />
                 </div>
               </div>
-              
+
               <div>
                 <Label htmlFor="measurements">Medidas</Label>
                 <Input
@@ -392,7 +402,7 @@ export function ModelDashboard() {
                   className="bg-black/50 border-gold-500/30 focus:border-gold-500"
                 />
               </div>
-              
+
               <div>
                 <Label htmlFor="location">Ubicación</Label>
                 <div className="relative">
@@ -406,7 +416,7 @@ export function ModelDashboard() {
                   />
                 </div>
               </div>
-              
+
               <div>
                 <Label htmlFor="hobbies">Intereses / Hobbies</Label>
                 <Input
@@ -417,7 +427,7 @@ export function ModelDashboard() {
                   className="bg-black/50 border-gold-500/30 focus:border-gold-500"
                 />
               </div>
-              
+
               <div>
                 <Label htmlFor="languages">Idiomas</Label>
                 <Input
@@ -428,7 +438,7 @@ export function ModelDashboard() {
                   className="bg-black/50 border-gold-500/30 focus:border-gold-500"
                 />
               </div>
-              
+
               <div className="pt-4 border-t border-gold-500/20">
                 <h4 className="text-sm text-gray-400 mb-4">Redes Sociales</h4>
                 <div className="space-y-3">
@@ -460,7 +470,25 @@ export function ModelDashboard() {
                   </div>
                 </div>
               </div>
-              
+
+              {/* Inline Error / Success Feedback */}
+              {saveError && (
+                <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-3 text-sm">
+                  <p className="text-red-400 flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                    <span>{saveError}</span>
+                  </p>
+                </div>
+              )}
+              {saveSuccess && (
+                <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-3 text-sm">
+                  <p className="text-green-400 flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 flex-shrink-0" />
+                    <span>Perfil guardado exitosamente</span>
+                  </p>
+                </div>
+              )}
+
               <Button
                 onClick={handleSaveProfile}
                 disabled={isSaving}
@@ -486,7 +514,7 @@ export function ModelDashboard() {
               <Camera className="w-5 h-5 mr-2 text-gold-400" />
               Mis Fotos
             </h3>
-            
+
             {/* Upload Area */}
             <div
               onClick={() => fileInputRef.current?.click()}
@@ -514,7 +542,7 @@ export function ModelDashboard() {
                 </>
               )}
             </div>
-            
+
             {/* Photo Grid */}
             {photos.length > 0 ? (
               <div className="grid grid-cols-3 gap-2">
@@ -559,7 +587,7 @@ export function ModelDashboard() {
                 <p>No has subido fotos aún</p>
               </div>
             )}
-            
+
             <p className="text-xs text-gray-500 mt-4">
               * Las fotos serán revisadas por nuestro equipo antes de ser publicadas.
             </p>
