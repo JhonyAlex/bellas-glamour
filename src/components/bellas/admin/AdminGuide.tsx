@@ -7,7 +7,7 @@ import {
     Star, Trash2, Edit,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 interface AdminGuideProps {
     open: boolean;
@@ -253,6 +253,9 @@ export function AdminGuide({ open, onOpenChange }: AdminGuideProps) {
     return (
         <Dialog open={open} onOpenChange={(v) => { if (!v) handleClose(); }}>
             <DialogContent className="bg-card border border-gold-500/20 max-w-lg p-0 overflow-hidden gap-0">
+                {/* Títulos accesibles ocultos visualmente (requerido por Radix Dialog) */}
+                <DialogTitle className="sr-only">{current.title}</DialogTitle>
+                <DialogDescription className="sr-only">{current.subtitle}</DialogDescription>
                 {/* Header */}
                 <div className="bg-gradient-to-br from-black to-card border-b border-gold-500/20 p-6">
                     <div className="flex items-center gap-3 mb-3">
