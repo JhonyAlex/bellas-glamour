@@ -3,9 +3,11 @@
 import { motion } from "framer-motion";
 import { Instagram, Twitter, Facebook, Mail, Phone, MapPin, Heart, Shield, AlertTriangle } from "lucide-react";
 import Link from "next/link";
+import { useSiteSettings } from "@/hooks/use-site-settings";
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
+  const { data: settings } = useSiteSettings();
 
   const quickLinks = [
     { href: "/#inicio", label: "Inicio" },
@@ -106,15 +108,15 @@ export function Footer() {
             <div className="space-y-3">
               <div className="flex items-center space-x-3 text-gray-400 text-sm">
                 <MapPin className="w-4 h-4 text-gold-400" />
-                <span>Ciudad de México, México</span>
+                <span>{settings?.contactLocation || "Ciudad de México, México"}</span>
               </div>
               <div className="flex items-center space-x-3 text-gray-400 text-sm">
                 <Phone className="w-4 h-4 text-gold-400" />
-                <span>+52 (55) 1234-5678</span>
+                <span>{settings?.contactPhone || "+52 (55) 1234-5678"}</span>
               </div>
               <div className="flex items-center space-x-3 text-gray-400 text-sm">
                 <Mail className="w-4 h-4 text-gold-400" />
-                <span>vip@bellasglamour.com</span>
+                <span>{settings?.contactEmail || "vip@bellasglamour.com"}</span>
               </div>
             </div>
             

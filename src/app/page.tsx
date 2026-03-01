@@ -99,7 +99,7 @@ export default function HomePage() {
                 initial={{ opacity: 0, x: 50 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
-                className="relative overflow-hidden"
+                className="relative"
               >
                 <div className="aspect-[4/5] relative rounded-lg overflow-hidden">
                   <img

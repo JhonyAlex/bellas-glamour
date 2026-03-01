@@ -13,9 +13,10 @@ import {
     AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import {
-    Dialog, DialogContent, DialogTitle,
+    Dialog, DialogContent, DialogDescription, DialogTitle,
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
+import { useQueryClient } from "@tanstack/react-query";
 import {
     useUpdatePhotoStatus, useDeletePhoto,
     type AdminPhoto,
@@ -31,6 +32,7 @@ interface AdminModelGalleryProps {
 
 export function AdminModelGallery({ profileId, photos, modelName }: AdminModelGalleryProps) {
     const { toast } = useToast();
+    const queryClient = useQueryClient();
     const updateStatus = useUpdatePhotoStatus();
     const deletePhoto = useDeletePhoto();
     const [lightboxPhoto, setLightboxPhoto] = useState<AdminPhoto | null>(null);
@@ -95,6 +97,7 @@ export function AdminModelGallery({ profileId, photos, modelName }: AdminModelGa
                 throw new Error(err.error || "Error al agregar al slider");
             }
             setAddedToSlider((prev) => new Set(prev).add(photoId));
+            queryClient.invalidateQueries({ queryKey: ["slider"] });
             toast({
                 title: "Agregada al slider",
                 description: "La foto ahora aparecerá en el slider del home.",
@@ -120,11 +123,14 @@ export function AdminModelGallery({ profileId, photos, modelName }: AdminModelGa
                 const err = await res.json().catch(() => ({}));
                 throw new Error(err.error || "Error al establecer foto principal");
             }
+            // Invalidar queries para actualizar en tiempo real sin recargar
+            queryClient.invalidateQueries({ queryKey: ["admin-model", profileId] });
+            queryClient.invalidateQueries({ queryKey: ["admin-models"] });
+            queryClient.invalidateQueries({ queryKey: ["public-models"] });
             toast({
                 title: "Foto principal actualizada",
                 description: "La foto ha sido marcada como foto de perfil.",
             });
-            window.location.reload();
         } catch (error) {
             toast({
                 title: "Error",
@@ -217,129 +223,130 @@ export function AdminModelGallery({ profileId, photos, modelName }: AdminModelGa
                                 <StatusBadge status={photo.status} />
                             </div>
 
-                            {/* Overlay de acciones */}
-                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center gap-2">
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-9 w-9 bg-white/10 hover:bg-white/20 text-white"
-                                    onClick={() => setLightboxPhoto(photo)}
-                                >
-                                    <ZoomIn className="w-4 h-4" />
-                                </Button>
-
-                                {photo.status !== "APPROVED" && (
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        className="h-9 w-9 bg-green-500/20 hover:bg-green-500/40 text-green-400"
-                                        onClick={() => handleStatusChange(photo.id, "APPROVED")}
-                                        disabled={loadingPhotoId === photo.id}
-                                    >
-                                        {loadingPhotoId === photo.id ? (
-                                            <Loader2 className="w-4 h-4 animate-spin" />
-                                        ) : (
-                                            <Check className="w-4 h-4" />
-                                        )}
-                                    </Button>
-                                )}
-
-                                {photo.status !== "REJECTED" && (
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        className="h-9 w-9 bg-red-500/20 hover:bg-red-500/40 text-red-400"
-                                        onClick={() => handleStatusChange(photo.id, "REJECTED")}
-                                        disabled={loadingPhotoId === photo.id}
-                                    >
-                                        <X className="w-4 h-4" />
-                                    </Button>
-                                )}
-
-                                <AlertDialog>
-                                    <AlertDialogTrigger asChild>
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            className="h-9 w-9 bg-red-500/20 hover:bg-red-500/40 text-red-400"
-                                            disabled={loadingPhotoId === photo.id}
-                                        >
-                                            <Trash2 className="w-4 h-4" />
-                                        </Button>
-                                    </AlertDialogTrigger>
-                                    <AlertDialogContent className="bg-card border-gold-500/20">
-                                        <AlertDialogHeader>
-                                            <AlertDialogTitle className="text-white">¿Eliminar foto?</AlertDialogTitle>
-                                            <AlertDialogDescription className="text-gray-400">
-                                                Esta acción no se puede deshacer. La foto será eliminada permanentemente.
-                                            </AlertDialogDescription>
-                                        </AlertDialogHeader>
-                                        <AlertDialogFooter>
-                                            <AlertDialogCancel className="border-gray-600 text-gray-300">
-                                                Cancelar
-                                            </AlertDialogCancel>
-                                            <AlertDialogAction
-                                                className="bg-red-500 hover:bg-red-600 text-white"
-                                                onClick={() => handleDelete(photo.id)}
-                                            >
-                                                Eliminar
-                                            </AlertDialogAction>
-                                        </AlertDialogFooter>
-                                    </AlertDialogContent>
-                                </AlertDialog>
-                            </div>
-
-                            {/* Indicador de foto de perfil */}
-                            {photo.isProfilePhoto && (
-                                <div className="absolute bottom-2 right-2 z-10">
+                            {/* Badges de estado (siempre visibles) */}
+                            <div className="absolute bottom-2 left-2 right-2 z-10 flex gap-1 pointer-events-none">
+                                {photo.isProfilePhoto && (
                                     <span className="bg-gold-500 text-black text-[10px] font-bold px-2 py-0.5 rounded">
                                         PERFIL
                                     </span>
-                                </div>
-                            )}
-
-                            {/* Indicador de slider */}
-                            {(photo.isSliderPhoto || addedToSlider.has(photo.id)) && (
-                                <div className="absolute bottom-2 left-2 z-10">
+                                )}
+                                {(photo.isSliderPhoto || addedToSlider.has(photo.id)) && (
                                     <span className="bg-blue-500 text-white text-[10px] font-bold px-2 py-0.5 rounded">
                                         SLIDER
                                     </span>
-                                </div>
-                            )}
+                                )}
+                            </div>
 
-                            {/* Botones de slider y foto principal (solo fotos aprobadas) */}
-                            {photo.status === "APPROVED" && (
-                                <div className="absolute top-2 right-2 z-10 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    {!photo.isSliderPhoto && !addedToSlider.has(photo.id) && (
-                                        <button
-                                            onClick={(e) => { e.stopPropagation(); handleAddToSlider(photo.id); }}
-                                            disabled={sliderLoadingId === photo.id}
-                                            className="bg-blue-500/80 hover:bg-blue-500 text-white p-1.5 rounded transition-colors"
-                                            title="Agregar al Slider"
-                                        >
-                                            {sliderLoadingId === photo.id ? (
-                                                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                                            ) : (
-                                                <ImageIcon className="w-3.5 h-3.5" />
-                                            )}
-                                        </button>
-                                    )}
-                                    {!photo.isProfilePhoto && (
-                                        <button
-                                            onClick={(e) => { e.stopPropagation(); handleSetProfilePhoto(photo.id); }}
-                                            disabled={profilePhotoLoadingId === photo.id}
-                                            className="bg-gold-500/80 hover:bg-gold-500 text-black p-1.5 rounded transition-colors"
-                                            title="Marcar como Principal"
-                                        >
-                                            {profilePhotoLoadingId === photo.id ? (
-                                                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                                            ) : (
-                                                <Star className="w-3.5 h-3.5" />
-                                            )}
-                                        </button>
-                                    )}
+                            {/* Overlay de acciones (hover) */}
+                            <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col justify-between p-2">
+                                {/* Fila superior: Ver ampliada */}
+                                <div className="flex justify-end">
+                                    <button
+                                        onClick={() => setLightboxPhoto(photo)}
+                                        className="flex items-center gap-1 bg-white/15 hover:bg-white/25 text-white text-[11px] font-medium px-2 py-1 rounded transition-colors"
+                                    >
+                                        <ZoomIn className="w-3.5 h-3.5" />
+                                        Ver
+                                    </button>
                                 </div>
-                            )}
+
+                                {/* Filas inferiores: Acciones principales */}
+                                <div className="flex flex-col gap-1.5">
+                                    {/* Moderación: Aprobar / Rechazar */}
+                                    <div className="flex gap-1.5">
+                                        {photo.status !== "APPROVED" && (
+                                            <button
+                                                onClick={() => handleStatusChange(photo.id, "APPROVED")}
+                                                disabled={loadingPhotoId === photo.id}
+                                                className="flex-1 flex items-center justify-center gap-1 bg-green-500/25 hover:bg-green-500/45 text-green-400 text-[11px] font-medium py-1.5 rounded transition-colors disabled:opacity-50"
+                                            >
+                                                {loadingPhotoId === photo.id ? (
+                                                    <Loader2 className="w-3 h-3 animate-spin" />
+                                                ) : (
+                                                    <Check className="w-3 h-3" />
+                                                )}
+                                                Aprobar
+                                            </button>
+                                        )}
+                                        {photo.status !== "REJECTED" && (
+                                            <button
+                                                onClick={() => handleStatusChange(photo.id, "REJECTED")}
+                                                disabled={loadingPhotoId === photo.id}
+                                                className="flex-1 flex items-center justify-center gap-1 bg-red-500/25 hover:bg-red-500/45 text-red-400 text-[11px] font-medium py-1.5 rounded transition-colors disabled:opacity-50"
+                                            >
+                                                <X className="w-3 h-3" />
+                                                Rechazar
+                                            </button>
+                                        )}
+                                    </div>
+
+                                    {/* Funciones extra: Slider / Foto de perfil (solo aprobadas) */}
+                                    {photo.status === "APPROVED" && (
+                                        <div className="flex gap-1.5">
+                                            {!photo.isSliderPhoto && !addedToSlider.has(photo.id) && (
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); handleAddToSlider(photo.id); }}
+                                                    disabled={sliderLoadingId === photo.id}
+                                                    className="flex-1 flex items-center justify-center gap-1 bg-blue-500/25 hover:bg-blue-500/45 text-blue-400 text-[11px] font-medium py-1.5 rounded transition-colors disabled:opacity-50"
+                                                >
+                                                    {sliderLoadingId === photo.id ? (
+                                                        <Loader2 className="w-3 h-3 animate-spin" />
+                                                    ) : (
+                                                        <ImageIcon className="w-3 h-3" />
+                                                    )}
+                                                    Slider
+                                                </button>
+                                            )}
+                                            {!photo.isProfilePhoto && (
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); handleSetProfilePhoto(photo.id); }}
+                                                    disabled={profilePhotoLoadingId === photo.id}
+                                                    className="flex-1 flex items-center justify-center gap-1 bg-gold-500/25 hover:bg-gold-500/45 text-gold-400 text-[11px] font-medium py-1.5 rounded transition-colors disabled:opacity-50"
+                                                >
+                                                    {profilePhotoLoadingId === photo.id ? (
+                                                        <Loader2 className="w-3 h-3 animate-spin" />
+                                                    ) : (
+                                                        <Star className="w-3 h-3" />
+                                                    )}
+                                                    Perfil
+                                                </button>
+                                            )}
+                                        </div>
+                                    )}
+
+                                    {/* Eliminar */}
+                                    <AlertDialog>
+                                        <AlertDialogTrigger asChild>
+                                            <button
+                                                disabled={loadingPhotoId === photo.id}
+                                                className="flex items-center justify-center gap-1 bg-red-500/15 hover:bg-red-500/35 text-red-400/80 hover:text-red-400 text-[11px] font-medium py-1.5 rounded transition-colors disabled:opacity-50"
+                                            >
+                                                <Trash2 className="w-3 h-3" />
+                                                Eliminar
+                                            </button>
+                                        </AlertDialogTrigger>
+                                        <AlertDialogContent className="bg-card border-gold-500/20">
+                                            <AlertDialogHeader>
+                                                <AlertDialogTitle className="text-white">¿Eliminar foto?</AlertDialogTitle>
+                                                <AlertDialogDescription className="text-gray-400">
+                                                    Esta acción no se puede deshacer. La foto será eliminada permanentemente.
+                                                </AlertDialogDescription>
+                                            </AlertDialogHeader>
+                                            <AlertDialogFooter>
+                                                <AlertDialogCancel className="border-gray-600 text-gray-300">
+                                                    Cancelar
+                                                </AlertDialogCancel>
+                                                <AlertDialogAction
+                                                    className="bg-red-500 hover:bg-red-600 text-white"
+                                                    onClick={() => handleDelete(photo.id)}
+                                                >
+                                                    Eliminar
+                                                </AlertDialogAction>
+                                            </AlertDialogFooter>
+                                        </AlertDialogContent>
+                                    </AlertDialog>
+                                </div>
+                            </div>
                         </motion.div>
                     ))}
                 </AnimatePresence>
@@ -349,6 +356,7 @@ export function AdminModelGallery({ profileId, photos, modelName }: AdminModelGa
             <Dialog open={!!lightboxPhoto} onOpenChange={() => setLightboxPhoto(null)}>
                 <DialogContent className="bg-black/95 border-gold-500/20 max-w-4xl p-2">
                     <DialogTitle className="sr-only">Vista de foto</DialogTitle>
+                    <DialogDescription className="sr-only">Vista ampliada de la foto</DialogDescription>
                     {lightboxPhoto && (
                         <div className="relative">
                             <img

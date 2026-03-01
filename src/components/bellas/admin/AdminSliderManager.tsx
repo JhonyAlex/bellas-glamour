@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface SliderPhoto {
     id: string;
@@ -22,6 +23,7 @@ interface SliderPhoto {
 
 export function AdminSliderManager() {
     const { toast } = useToast();
+    const queryClient = useQueryClient();
     const [photos, setPhotos] = useState<SliderPhoto[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [removingId, setRemovingId] = useState<string | null>(null);
@@ -54,6 +56,7 @@ export function AdminSliderManager() {
             if (!res.ok) throw new Error("Error al quitar del slider");
 
             setPhotos((prev) => prev.filter((p) => p.id !== photoId));
+            queryClient.invalidateQueries({ queryKey: ["slider"] });
             toast({
                 title: "Foto removida",
                 description: "La foto ha sido quitada del slider.",
@@ -96,6 +99,7 @@ export function AdminSliderManager() {
                 }),
             });
             if (!res.ok) throw new Error("Error al reordenar");
+            queryClient.invalidateQueries({ queryKey: ["slider"] });
         } catch {
             toast({
                 title: "Error",

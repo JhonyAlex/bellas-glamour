@@ -162,6 +162,7 @@ export function useUpdateModel() {
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: ["admin-models"] });
             queryClient.invalidateQueries({ queryKey: ["admin-model", variables.id] });
+            queryClient.invalidateQueries({ queryKey: ["public-models"] });
         },
     });
 }
@@ -185,6 +186,7 @@ export function useUpdateModelStatus() {
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: ["admin-models"] });
             queryClient.invalidateQueries({ queryKey: ["admin-model", variables.id] });
+            queryClient.invalidateQueries({ queryKey: ["public-models"] });
         },
     });
 }
@@ -208,6 +210,7 @@ export function useToggleFeatured() {
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: ["admin-models"] });
             queryClient.invalidateQueries({ queryKey: ["admin-model", variables.id] });
+            queryClient.invalidateQueries({ queryKey: ["public-models"] });
         },
     });
 }
@@ -230,6 +233,8 @@ export function useUpdatePhotoStatus() {
         },
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: ["admin-model", variables.profileId] });
+            queryClient.invalidateQueries({ queryKey: ["public-models"] });
+            queryClient.invalidateQueries({ queryKey: ["slider"] });
         },
     });
 }
@@ -251,6 +256,8 @@ export function useDeletePhoto() {
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: ["admin-models"] });
             queryClient.invalidateQueries({ queryKey: ["admin-model", variables.profileId] });
+            queryClient.invalidateQueries({ queryKey: ["public-models"] });
+            queryClient.invalidateQueries({ queryKey: ["slider"] });
         },
     });
 }
@@ -291,6 +298,7 @@ export function useUploadAdminPhoto() {
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: ["admin-models"] });
             queryClient.invalidateQueries({ queryKey: ["admin-model", variables.profileId] });
+            queryClient.invalidateQueries({ queryKey: ["public-models"] });
         },
     });
 }

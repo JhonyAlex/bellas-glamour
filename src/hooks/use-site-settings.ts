@@ -9,6 +9,7 @@ export function useSiteSettings() {
       if (!res.ok) throw new Error("Error al cargar configuración del sitio");
       return res.json();
     },
-    staleTime: 60_000,
+    staleTime: 15_000,
+    refetchInterval: 30_000, // Auto-refresca cada 30s para cambios en tiempo real
   });
 }

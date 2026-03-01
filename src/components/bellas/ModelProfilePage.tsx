@@ -58,6 +58,7 @@ export function ModelProfilePage({ model }: ModelProfilePageProps) {
                       src={model.photos[currentPhotoIndex]?.url || placeholderImage}
                       alt={displayName}
                       fill
+                      unoptimized
                       className="object-cover"
                       sizes="(max-width: 768px) 100vw, 50vw"
                       priority
@@ -91,6 +92,7 @@ export function ModelProfilePage({ model }: ModelProfilePageProps) {
                     src={placeholderImage}
                     alt={displayName}
                     fill
+                    unoptimized
                     className="object-cover"
                     sizes="(max-width: 768px) 100vw, 50vw"
                   />
@@ -130,6 +132,7 @@ export function ModelProfilePage({ model }: ModelProfilePageProps) {
                               src={photo.url}
                               alt={`Foto ${index + 1}`}
                               fill
+                              unoptimized
                               className="object-cover"
                               sizes="100px"
                             />

@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { ChevronDown, Sparkles, Crown, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
+import { useSlider } from "@/hooks/use-public-data";
 
 interface HeroSectionProps {
   onJoinClick: () => void;
@@ -34,26 +35,10 @@ const heroSlides = [
 
 export function HeroSection({ onJoinClick, tagline, ctaText }: HeroSectionProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [slides, setSlides] = useState(heroSlides);
+  const { data: sliderData } = useSlider();
 
-  useEffect(() => {
-    // Fetch dynamic slider photos
-    const fetchSliderPhotos = async () => {
-      try {
-        const response = await fetch("/api/slider");
-        if (response.ok) {
-          const data = await response.json();
-          if (data && data.length > 0) {
-            setSlides(data);
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching slider photos:", error);
-      }
-    };
-
-    fetchSliderPhotos();
-  }, []);
+  // Usar fotos dinámicas del slider si existen, sino fallback a defaults
+  const slides = sliderData && sliderData.length > 0 ? sliderData : heroSlides;
 
   useEffect(() => {
     const timer = setInterval(() => {

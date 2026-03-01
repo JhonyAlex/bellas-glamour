@@ -2,15 +2,28 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Save, Loader2, Globe, Layout, Briefcase, Phone, Type } from "lucide-react";
+import { Save, Loader2, Globe, Layout, Briefcase, Phone, Type, ImageIcon, Check, X } from "lucide-react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   Accordion, AccordionContent, AccordionItem, AccordionTrigger,
 } from "@/components/ui/accordion";
+import {
+  Dialog, DialogContent, DialogTitle, DialogDescription,
+} from "@/components/ui/dialog";
+
+interface ApprovedPhoto {
+  id: string;
+  url: string;
+  isProfilePhoto: boolean;
+  modelName: string;
+  profileId: string;
+}
 
 interface SiteSettingsData {
   heroTagline?: string | null;
@@ -45,9 +58,13 @@ interface SiteSettingsData {
 
 export function AdminSiteSettings() {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [form, setForm] = useState<SiteSettingsData>({});
+  const [photoPickerOpen, setPhotoPickerOpen] = useState(false);
+  const [approvedPhotos, setApprovedPhotos] = useState<ApprovedPhoto[]>([]);
+  const [photosLoading, setPhotosLoading] = useState(false);
 
   useEffect(() => {
     fetchSettings();
@@ -81,7 +98,9 @@ export function AdminSiteSettings() {
         throw new Error(error.error || "Error al guardar");
       }
 
-      toast({ title: "Configuración guardada", description: "Los cambios se verán reflejados en el sitio." });
+      // Invalidar cache para que el Home y Footer se actualicen en tiempo real
+      queryClient.invalidateQueries({ queryKey: ["site-settings"] });
+      toast({ title: "Configuración guardada", description: "Los cambios se reflejan automáticamente en el sitio." });
     } catch (error) {
       toast({
         title: "Error",
@@ -91,6 +110,27 @@ export function AdminSiteSettings() {
     } finally {
       setIsSaving(false);
     }
+  };
+
+  const openPhotoPicker = async () => {
+    setPhotoPickerOpen(true);
+    if (approvedPhotos.length > 0) return; // Ya cargadas
+    setPhotosLoading(true);
+    try {
+      const res = await fetch("/api/admin/approved-photos");
+      if (res.ok) {
+        setApprovedPhotos(await res.json());
+      }
+    } catch {
+      console.error("Error fetching photos");
+    } finally {
+      setPhotosLoading(false);
+    }
+  };
+
+  const selectAboutPhoto = (url: string) => {
+    setForm((prev) => ({ ...prev, aboutImageUrl: url }));
+    setPhotoPickerOpen(false);
   };
 
   const updateField = (field: keyof SiteSettingsData, value: string) => {
@@ -193,13 +233,48 @@ export function AdminSiteSettings() {
               />
             </div>
             <div>
-              <Label className="text-gray-400 text-sm">URL de imagen</Label>
-              <Input
-                value={form.aboutImageUrl || ""}
-                onChange={(e) => updateField("aboutImageUrl", e.target.value)}
-                placeholder="https://..."
-                className="mt-1 bg-secondary border-gold-500/10 text-white"
-              />
+              <Label className="text-gray-400 text-sm">Imagen de la sección</Label>
+              <div className="mt-1 flex items-start gap-4">
+                {/* Vista previa */}
+                <div className="relative w-24 h-32 rounded-lg overflow-hidden bg-secondary border border-gold-500/10 flex-shrink-0">
+                  {form.aboutImageUrl ? (
+                    <>
+                      <Image
+                        src={form.aboutImageUrl}
+                        alt="Vista previa"
+                        fill
+                        unoptimized
+                        className="object-cover"
+                        sizes="96px"
+                      />
+                      <button
+                        onClick={() => setForm((prev) => ({ ...prev, aboutImageUrl: null }))}
+                        className="absolute top-1 right-1 w-5 h-5 rounded-full bg-red-500/80 hover:bg-red-500 flex items-center justify-center text-white transition-colors"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </>
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-gray-500">
+                      <ImageIcon className="w-8 h-8" />
+                    </div>
+                  )}
+                </div>
+                <div className="flex-1 space-y-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={openPhotoPicker}
+                    className="w-full border-gold-500/30 text-gold-400 hover:bg-gold-500/10"
+                  >
+                    <ImageIcon className="w-4 h-4 mr-2" />
+                    Elegir de fotos de modelos
+                  </Button>
+                  <p className="text-gray-500 text-xs">
+                    Selecciona una foto aprobada de cualquier modelo
+                  </p>
+                </div>
+              </div>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               <div>
@@ -339,6 +414,64 @@ export function AdminSiteSettings() {
           Guardar cambios
         </Button>
       </div>
+
+      {/* Photo Picker Dialog */}
+      <Dialog open={photoPickerOpen} onOpenChange={setPhotoPickerOpen}>
+        <DialogContent className="bg-card border-gold-500/20 max-w-3xl max-h-[80vh] overflow-hidden flex flex-col">
+          <DialogTitle className="text-white font-serif text-lg">Elegir imagen de &ldquo;Sobre Nosotros&rdquo;</DialogTitle>
+          <DialogDescription className="text-gray-400 text-sm">
+            Selecciona una foto aprobada de las modelos para mostrar en la sección &ldquo;Sobre Bellas Glamour&rdquo;
+          </DialogDescription>
+
+          {photosLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="w-8 h-8 animate-spin text-gold-400" />
+            </div>
+          ) : approvedPhotos.length === 0 ? (
+            <div className="text-center py-12">
+              <ImageIcon className="w-10 h-10 mx-auto text-gray-500 mb-3" />
+              <p className="text-gray-400 text-sm">No hay fotos aprobadas disponibles</p>
+            </div>
+          ) : (
+            <div className="overflow-y-auto flex-1 -mx-2 px-2">
+              <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                {approvedPhotos.map((photo) => {
+                  const isSelected = form.aboutImageUrl === photo.url;
+                  return (
+                    <button
+                      key={photo.id}
+                      onClick={() => selectAboutPhoto(photo.url)}
+                      className={`group relative aspect-[3/4] rounded-lg overflow-hidden border-2 transition-all ${
+                        isSelected
+                          ? "border-gold-500 ring-2 ring-gold-500/30"
+                          : "border-transparent hover:border-gold-500/50"
+                      }`}
+                    >
+                      <Image
+                        src={photo.url}
+                        alt={photo.modelName}
+                        fill
+                        unoptimized
+                        className="object-cover"
+                        sizes="150px"
+                      />
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
+                        <p className="text-white text-[11px] font-medium truncate">{photo.modelName}</p>
+                      </div>
+                      {isSelected && (
+                        <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-gold-500 flex items-center justify-center">
+                          <Check className="w-4 h-4 text-black" />
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </motion.div>
   );
 }

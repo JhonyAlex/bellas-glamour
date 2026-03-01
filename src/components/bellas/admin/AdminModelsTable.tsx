@@ -256,7 +256,7 @@ export function AdminModelsTable({
                                         <div className="flex items-center gap-3">
                                             <div className="relative w-10 h-10 rounded-full bg-gold-500/20 flex items-center justify-center overflow-hidden flex-shrink-0">
                                                 {model.user.image ? (
-                                                    <NextImage src={model.user.image} alt="" fill className="object-cover" sizes="40px" />
+                                                    <NextImage src={model.user.image} alt="" fill unoptimized className="object-cover" sizes="40px" />
                                                 ) : (
                                                     <Users className="w-5 h-5 text-gold-400" />
                                                 )}
@@ -299,7 +299,7 @@ export function AdminModelsTable({
                                                 >
                                                     {model.photos.map((photo) => (
                                                         <div key={photo.id} className="relative w-8 h-8 rounded bg-gold-500/10 overflow-hidden flex-shrink-0">
-                                                            <NextImage src={photo.url} alt="preview" fill className="object-cover" sizes="32px" />
+                                                            <NextImage src={photo.url} alt="preview" fill unoptimized className="object-cover" sizes="32px" />
                                                         </div>
                                                     ))}
                                                     {model._count.photos > 4 && (
@@ -384,7 +384,7 @@ export function AdminModelsTable({
                             <div className="flex items-center gap-3 min-w-0">
                                 <div className="relative w-10 h-10 rounded-full bg-gold-500/20 flex items-center justify-center overflow-hidden flex-shrink-0">
                                     {model.user.image ? (
-                                        <NextImage src={model.user.image} alt="" fill className="object-cover" sizes="40px" />
+                                        <NextImage src={model.user.image} alt="" fill unoptimized className="object-cover" sizes="40px" />
                                     ) : (
                                         <Users className="w-5 h-5 text-gold-400" />
                                     )}
@@ -419,7 +419,7 @@ export function AdminModelsTable({
                             >
                                 {model.photos.map((photo) => (
                                     <div key={photo.id} className="relative w-16 h-16 rounded-md bg-gold-500/10 overflow-hidden flex-shrink-0">
-                                        <NextImage src={photo.url} alt="" fill className="object-cover" sizes="64px" />
+                                        <NextImage src={photo.url} alt="" fill unoptimized className="object-cover" sizes="64px" />
                                     </div>
                                 ))}
                                 {model._count.photos > 4 && (

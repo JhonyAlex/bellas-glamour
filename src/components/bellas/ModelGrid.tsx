@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, SlidersHorizontal, X } from "lucide-react";
 import { ModelCard } from "./ModelCard";
@@ -13,28 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-interface Model {
-  id: string;
-  artisticName: string | null;
-  bio: string | null;
-  height: number | null;
-  eyeColor: string | null;
-  hairColor: string | null;
-  location: string | null;
-  featured: boolean;
-  views: number;
-  user: {
-    id: string;
-    name: string | null;
-    image: string | null;
-  };
-  photos: Array<{
-    id: string;
-    url: string;
-    isProfilePhoto: boolean;
-  }>;
-}
+import { usePublicModels } from "@/hooks/use-public-data";
 
 const eyeColors = [
   { value: "all", label: "Todos" },
@@ -65,39 +44,14 @@ const hairColors = [
 ];
 
 export function ModelGrid() {
-  const [models, setModels] = useState<Model[]>([]);
-  const [filteredModels, setFilteredModels] = useState<Model[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { data: models = [], isLoading } = usePublicModels();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedEyeColor, setSelectedEyeColor] = useState("all");
   const [selectedHeight, setSelectedHeight] = useState("all");
   const [selectedHairColor, setSelectedHairColor] = useState("all");
   const [showFilters, setShowFilters] = useState(false);
 
-  useEffect(() => {
-    fetchModels();
-  }, []);
-
-  useEffect(() => {
-    filterModels();
-  }, [models, searchQuery, selectedEyeColor, selectedHeight, selectedHairColor]);
-
-  const fetchModels = async () => {
-    try {
-      const response = await fetch("/api/models");
-      if (response.ok) {
-        const data = await response.json();
-        setModels(data);
-        setFilteredModels(data);
-      }
-    } catch (error) {
-      console.error("Error fetching models:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const filterModels = () => {
+  const filteredModels = useMemo(() => {
     let filtered = [...models];
 
     // Search filter
@@ -132,8 +86,8 @@ export function ModelGrid() {
       );
     }
 
-    setFilteredModels(filtered);
-  };
+    return filtered;
+  }, [models, searchQuery, selectedEyeColor, selectedHeight, selectedHairColor]);
 
   const clearFilters = () => {
     setSearchQuery("");
@@ -162,7 +116,7 @@ export function ModelGrid() {
             Nuestras <span className="text-gold-gradient">Modelos</span>
           </h2>
           <p className="text-gray-400 max-w-2xl mx-auto">
-            Descubre el talento más exclusivo. Cada modelo aporta su esencia única 
+            Descubre el talento más exclusivo. Cada modelo aporta su esencia única
             a nuestros proyectos de moda y publicidad.
           </p>
         </motion.div>
