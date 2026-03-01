@@ -88,7 +88,11 @@ model Profile {
   instagram       String?
   twitter         String?
   tiktok          String?
-  
+
+  // WhatsApp
+  phoneNumber          String?       // Número de teléfono con código de país
+  whatsappAvailable    Boolean       @default(false)  // Mostrar botón de WhatsApp
+
   // Estado y Control
   status          ProfileStatus @default(PENDING)
   featured        Boolean       @default(false)  // Destacada en home
@@ -156,4 +160,53 @@ model Session {
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   
   @@map("sessions")
+}
+
+// ==================== SITE SETTINGS (Contenido dinámico del Home) ====================
+
+model SiteSettings {
+  id                String   @id @default("singleton")
+
+  // Hero / Slider
+  heroTagline       String?  // Tagline debajo del slider
+  heroCtaText       String?  // Texto del botón CTA principal
+
+  // Sección About
+  aboutTitle        String?
+  aboutText1        String?  // Primer párrafo
+  aboutText2        String?  // Segundo párrafo
+  aboutImageUrl     String?  // URL de la imagen
+  stat1Value        String?  // Ej: "150+"
+  stat1Label        String?  // Ej: "Modelos"
+  stat2Value        String?  // Ej: "500+"
+  stat2Label        String?  // Ej: "Proyectos"
+  stat3Value        String?  // Ej: "10+"
+  stat3Label        String?  // Ej: "Años"
+
+  // Sección Servicios
+  servicesTitle     String?
+  servicesSubtitle  String?
+  service1Title     String?
+  service1Desc      String?
+  service1Icon      String?  // Emoji o nombre de icono
+  service2Title     String?
+  service2Desc      String?
+  service2Icon      String?
+  service3Title     String?
+  service3Desc      String?
+  service3Icon      String?
+
+  // Contacto
+  contactEmail      String?
+  contactPhone      String?
+  contactLocation   String?
+
+  // Banner Membership
+  membershipTitle   String?
+  membershipText    String?
+
+  // Timestamps
+  updatedAt         DateTime @updatedAt
+
+  @@map("site_settings")
 }

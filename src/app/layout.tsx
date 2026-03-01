@@ -3,6 +3,8 @@ import { Lato, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { Providers } from "./providers";
+import { AgeGateWrapper } from "@/components/bellas/AgeGateWrapper";
+import { AuthProvider } from "@/components/bellas/AuthProvider";
 
 const lato = Lato({
   variable: "--font-lato",
@@ -47,7 +49,11 @@ export default function RootLayout({
         className={`${lato.variable} ${playfair.variable} antialiased bg-background text-foreground min-h-screen flex flex-col`}
       >
         <Providers>
-          {children}
+          <AgeGateWrapper>
+            <AuthProvider>
+              {children}
+            </AuthProvider>
+          </AgeGateWrapper>
         </Providers>
         <Toaster />
       </body>

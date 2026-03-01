@@ -6,6 +6,12 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
   reactStrictMode: false,
+  images: {
+    remotePatterns: [
+      { protocol: "https", hostname: "images.unsplash.com" },
+      { protocol: "https", hostname: "picsum.photos" },
+    ],
+  },
   // Rewrite /uploads/* to API route BEFORE static file lookup
   // (beforeFiles ensures it runs before Next.js tries to serve from /public)
   async rewrites() {

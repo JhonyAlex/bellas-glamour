@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import {
   Camera, Upload, Save, Loader2, User, Ruler, Eye,
-  MapPin, Instagram, Twitter, Trash2, AlertCircle, CheckCircle, Star
+  MapPin, Instagram, Twitter, Trash2, AlertCircle, CheckCircle, Star, Phone, MessageCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -68,6 +69,8 @@ export function ModelDashboard() {
     location: "",
     instagram: "",
     twitter: "",
+    phoneNumber: "",
+    whatsappAvailable: false,
   });
 
   useEffect(() => {
@@ -97,6 +100,8 @@ export function ModelDashboard() {
             location: data.location || "",
             instagram: data.instagram || "",
             twitter: data.twitter || "",
+            phoneNumber: data.phoneNumber || "",
+            whatsappAvailable: data.whatsappAvailable || false,
           });
         }
       }
@@ -129,6 +134,8 @@ export function ModelDashboard() {
           location: formData.location || null,
           instagram: formData.instagram || null,
           twitter: formData.twitter || null,
+          phoneNumber: formData.phoneNumber || null,
+          whatsappAvailable: formData.whatsappAvailable,
         }),
       });
 
@@ -506,6 +513,43 @@ export function ModelDashboard() {
                 </div>
               </div>
 
+              <div className="pt-4 border-t border-gold-500/20">
+                <h4 className="text-sm text-gray-400 mb-4 flex items-center">
+                  <MessageCircle className="w-4 h-4 mr-2" />
+                  WhatsApp
+                </h4>
+                <div className="space-y-3">
+                  <div>
+                    <Label htmlFor="phoneNumber">Número de teléfono</Label>
+                    <div className="relative">
+                      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <Input
+                        id="phoneNumber"
+                        value={formData.phoneNumber}
+                        onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
+                        placeholder="+521234567890"
+                        className="pl-10 bg-black/50 border-gold-500/30 focus:border-gold-500"
+                      />
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Incluye código de país, ej: +521234567890
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="checkbox"
+                      id="whatsappAvailable"
+                      checked={formData.whatsappAvailable}
+                      onChange={(e) => setFormData({ ...formData, whatsappAvailable: e.target.checked })}
+                      className="w-4 h-4 rounded border-gold-500/30 bg-black/50 accent-gold-500"
+                    />
+                    <Label htmlFor="whatsappAvailable" className="text-sm text-gray-300 cursor-pointer">
+                      Mostrar botón de WhatsApp en mi perfil público
+                    </Label>
+                  </div>
+                </div>
+              </div>
+
               {/* Inline Error / Success Feedback */}
               {saveError && (
                 <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-3 text-sm">
@@ -586,10 +630,12 @@ export function ModelDashboard() {
                     key={photo.id}
                     className="relative aspect-square rounded overflow-hidden group"
                   >
-                    <img
+                    <Image
                       src={photo.url}
                       alt="Foto"
-                      className="w-full h-full object-cover"
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 33vw, 150px"
                     />
                     <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2">
                       {getStatusBadge(photo.status)}

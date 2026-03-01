@@ -36,10 +36,6 @@ interface Model {
   }>;
 }
 
-interface ModelGridProps {
-  onModelClick: (model: Model) => void;
-}
-
 const eyeColors = [
   { value: "all", label: "Todos" },
   { value: "negro", label: "Negro" },
@@ -68,7 +64,7 @@ const hairColors = [
   { value: "gris", label: "Gris" },
 ];
 
-export function ModelGrid({ onModelClick }: ModelGridProps) {
+export function ModelGrid() {
   const [models, setModels] = useState<Model[]>([]);
   const [filteredModels, setFilteredModels] = useState<Model[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -322,7 +318,6 @@ export function ModelGrid({ onModelClick }: ModelGridProps) {
                 <ModelCard
                   key={model.id}
                   model={model}
-                  onClick={() => onModelClick(model)}
                   index={index}
                 />
               ))}

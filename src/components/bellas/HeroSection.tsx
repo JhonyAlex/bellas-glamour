@@ -7,6 +7,8 @@ import { useEffect, useState } from "react";
 
 interface HeroSectionProps {
   onJoinClick: () => void;
+  tagline?: string | null;
+  ctaText?: string | null;
 }
 
 const heroSlides = [
@@ -30,7 +32,7 @@ const heroSlides = [
   },
 ];
 
-export function HeroSection({ onJoinClick }: HeroSectionProps) {
+export function HeroSection({ onJoinClick, tagline, ctaText }: HeroSectionProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [slides, setSlides] = useState(heroSlides);
 
@@ -151,8 +153,7 @@ export function HeroSection({ onJoinClick }: HeroSectionProps) {
             transition={{ duration: 1, delay: 1.2 }}
             className="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto mb-4"
           >
-            Agencia de modelos premium exclusiva para adultos.
-            Descubre el talento más sofisticado y elegante.
+            {tagline || "Agencia de modelos premium exclusiva para adultos. Descubre el talento más sofisticado y elegante."}
           </motion.p>
 
           {/* Age Notice */}

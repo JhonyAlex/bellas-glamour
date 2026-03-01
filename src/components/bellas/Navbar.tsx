@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, User, LogOut, Crown, Camera, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -9,13 +10,15 @@ import { useAuthStore } from "@/store/authStore";
 
 interface NavbarProps {
   onLoginClick: () => void;
-  onDashboardClick: () => void;
 }
 
-export function Navbar({ onLoginClick, onDashboardClick }: NavbarProps) {
+export function Navbar({ onLoginClick }: NavbarProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { user, isAuthenticated, logout } = useAuthStore();
+  const pathname = usePathname();
+
+  const hashPrefix = pathname === "/" ? "" : "/";
 
   useEffect(() => {
     const handleScroll = () => {
@@ -35,10 +38,10 @@ export function Navbar({ onLoginClick, onDashboardClick }: NavbarProps) {
   };
 
   const navLinks = [
-    { href: "#inicio", label: "Inicio" },
-    { href: "#modelos", label: "Modelos" },
-    { href: "#nosotros", label: "Nosotros" },
-    { href: "#contacto", label: "Contacto" },
+    { href: `${hashPrefix}#inicio`, label: "Inicio" },
+    { href: `${hashPrefix}#modelos`, label: "Modelos" },
+    { href: `${hashPrefix}#nosotros`, label: "Nosotros" },
+    { href: `${hashPrefix}#contacto`, label: "Contacto" },
   ];
 
   return (
@@ -66,7 +69,7 @@ export function Navbar({ onLoginClick, onDashboardClick }: NavbarProps) {
                 GLAMOUR
               </span>
             </motion.div>
-            
+
             {/* 18+ Badge */}
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
@@ -97,26 +100,28 @@ export function Navbar({ onLoginClick, onDashboardClick }: NavbarProps) {
             {isAuthenticated && user ? (
               <div className="flex items-center space-x-4">
                 {user.role === "ADMIN" && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={onDashboardClick}
-                    className="text-gold-400 hover:text-gold-300"
-                  >
-                    <Crown className="w-4 h-4 mr-2" />
-                    Admin
-                  </Button>
+                  <Link href="/admin">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-gold-400 hover:text-gold-300"
+                    >
+                      <Crown className="w-4 h-4 mr-2" />
+                      Admin
+                    </Button>
+                  </Link>
                 )}
                 {user.role === "MODEL" && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={onDashboardClick}
-                    className="text-gold-400 hover:text-gold-300"
-                  >
-                    <Camera className="w-4 h-4 mr-2" />
-                    Mi Perfil
-                  </Button>
+                  <Link href="/dashboard">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-gold-400 hover:text-gold-300"
+                    >
+                      <Camera className="w-4 h-4 mr-2" />
+                      Mi Perfil
+                    </Button>
+                  </Link>
                 )}
                 <div className="flex items-center space-x-2 text-gray-300">
                   <User className="w-4 h-4" />
@@ -191,30 +196,32 @@ export function Navbar({ onLoginClick, onDashboardClick }: NavbarProps) {
                 {isAuthenticated ? (
                   <>
                     {user?.role === "MODEL" && (
-                      <Button
-                        variant="ghost"
-                        className="w-full justify-start text-gold-400"
-                        onClick={() => {
-                          onDashboardClick();
-                          setIsMobileMenuOpen(false);
-                        }}
+                      <Link
+                        href="/dashboard"
+                        onClick={() => setIsMobileMenuOpen(false)}
                       >
-                        <Camera className="w-4 h-4 mr-2" />
-                        Mi Perfil
-                      </Button>
+                        <Button
+                          variant="ghost"
+                          className="w-full justify-start text-gold-400"
+                        >
+                          <Camera className="w-4 h-4 mr-2" />
+                          Mi Perfil
+                        </Button>
+                      </Link>
                     )}
                     {user?.role === "ADMIN" && (
-                      <Button
-                        variant="ghost"
-                        className="w-full justify-start text-gold-400"
-                        onClick={() => {
-                          onDashboardClick();
-                          setIsMobileMenuOpen(false);
-                        }}
+                      <Link
+                        href="/admin"
+                        onClick={() => setIsMobileMenuOpen(false)}
                       >
-                        <Crown className="w-4 h-4 mr-2" />
-                        Admin
-                      </Button>
+                        <Button
+                          variant="ghost"
+                          className="w-full justify-start text-gold-400"
+                        >
+                          <Crown className="w-4 h-4 mr-2" />
+                          Admin
+                        </Button>
+                      </Link>
                     )}
                     <Button
                       variant="ghost"

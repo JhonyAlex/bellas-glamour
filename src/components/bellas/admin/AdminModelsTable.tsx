@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useCallback, useEffect } from "react";
+import NextImage from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import {
     Search, Users, Eye, Edit, Image, ChevronLeft, ChevronRight,
@@ -253,9 +254,9 @@ export function AdminModelsTable({
                                     {/* Modelo info */}
                                     <td className="py-3 px-4">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 rounded-full bg-gold-500/20 flex items-center justify-center overflow-hidden flex-shrink-0">
+                                            <div className="relative w-10 h-10 rounded-full bg-gold-500/20 flex items-center justify-center overflow-hidden flex-shrink-0">
                                                 {model.user.image ? (
-                                                    <img src={model.user.image} alt="" className="w-full h-full object-cover" />
+                                                    <NextImage src={model.user.image} alt="" fill className="object-cover" sizes="40px" />
                                                 ) : (
                                                     <Users className="w-5 h-5 text-gold-400" />
                                                 )}
@@ -297,8 +298,8 @@ export function AdminModelsTable({
                                                     title={`Ver ${model._count.photos} fotos`}
                                                 >
                                                     {model.photos.map((photo) => (
-                                                        <div key={photo.id} className="w-8 h-8 rounded bg-gold-500/10 overflow-hidden flex-shrink-0">
-                                                            <img src={photo.url} alt="preview" className="w-full h-full object-cover" />
+                                                        <div key={photo.id} className="relative w-8 h-8 rounded bg-gold-500/10 overflow-hidden flex-shrink-0">
+                                                            <NextImage src={photo.url} alt="preview" fill className="object-cover" sizes="32px" />
                                                         </div>
                                                     ))}
                                                     {model._count.photos > 4 && (
@@ -381,9 +382,9 @@ export function AdminModelsTable({
                     >
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3 min-w-0">
-                                <div className="w-10 h-10 rounded-full bg-gold-500/20 flex items-center justify-center overflow-hidden flex-shrink-0">
+                                <div className="relative w-10 h-10 rounded-full bg-gold-500/20 flex items-center justify-center overflow-hidden flex-shrink-0">
                                     {model.user.image ? (
-                                        <img src={model.user.image} alt="" className="w-full h-full object-cover" />
+                                        <NextImage src={model.user.image} alt="" fill className="object-cover" sizes="40px" />
                                     ) : (
                                         <Users className="w-5 h-5 text-gold-400" />
                                     )}
@@ -417,8 +418,8 @@ export function AdminModelsTable({
                                 onClick={() => onViewGallery(model.id)}
                             >
                                 {model.photos.map((photo) => (
-                                    <div key={photo.id} className="w-16 h-16 rounded-md bg-gold-500/10 overflow-hidden flex-shrink-0">
-                                        <img src={photo.url} alt="" className="w-full h-full object-cover" />
+                                    <div key={photo.id} className="relative w-16 h-16 rounded-md bg-gold-500/10 overflow-hidden flex-shrink-0">
+                                        <NextImage src={photo.url} alt="" fill className="object-cover" sizes="64px" />
                                     </div>
                                 ))}
                                 {model._count.photos > 4 && (

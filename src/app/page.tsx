@@ -1,139 +1,34 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Navbar } from "@/components/bellas/Navbar";
 import { Footer } from "@/components/bellas/Footer";
 import { HeroSection } from "@/components/bellas/HeroSection";
 import { ModelGrid } from "@/components/bellas/ModelGrid";
 import { AuthModal } from "@/components/bellas/AuthModal";
-import { ModelProfile } from "@/components/bellas/ModelProfile";
-import { ModelDashboard } from "@/components/bellas/ModelDashboard";
-import { AdminDashboard } from "@/components/bellas/AdminDashboard";
-import { AgeGate } from "@/components/bellas/AgeGate";
-import { useAuthStore, type User } from "@/store/authStore";
-import { Sparkles, Star, Heart, Award, Diamond, Crown, Gem } from "lucide-react";
+import { useSiteSettings } from "@/hooks/use-site-settings";
+import { Diamond, Crown, Gem, Award, Heart } from "lucide-react";
 
-interface Model {
-  id: string;
-  artisticName: string | null;
-  bio: string | null;
-  height: number | null;
-  weight: number | null;
-  eyeColor: string | null;
-  hairColor: string | null;
-  skinTone?: string | null;
-  measurements: string | null;
-  shoeSize?: number | null;
-  hobbies?: string | null;
-  languages?: string | null;
-  skills?: string | null;
-  location: string | null;
-  nationality?: string | null;
-  instagram?: string | null;
-  twitter?: string | null;
-  tiktok?: string | null;
-  featured: boolean;
-  views: number;
-  user: {
-    id: string;
-    name: string | null;
-    image: string | null;
-  };
-  photos: Array<{
-    id: string;
-    url: string;
-    title?: string | null;
-    isProfilePhoto: boolean;
-  }>;
-}
-
-export default function BellasGlamourPage() {
-  const { user, isAuthenticated, login, setProfile, setLoading, isLoading } = useAuthStore();
-  const [isAgeVerified, setIsAgeVerified] = useState(false);
+export default function HomePage() {
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const [selectedModel, setSelectedModel] = useState<Model | null>(null);
-  const [showDashboard, setShowDashboard] = useState(false);
-
-  // Check age verification on mount
-  useEffect(() => {
-    const verified = localStorage.getItem("bellas-glamour-age-verified");
-    if (verified === "true") {
-      setIsAgeVerified(true);
-    }
-  }, []);
-
-  // Check for existing session on mount
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const response = await fetch("/api/auth/me");
-        if (response.ok) {
-          const data = await response.json();
-          login(data.user, "");
-          if (data.profile) {
-            setProfile(data.profile);
-          }
-        }
-      } catch (error) {
-        // Not logged in
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (isAgeVerified) {
-      checkAuth();
-    }
-  }, [isAgeVerified]);
-
-  const handleAgeVerified = () => {
-    setIsAgeVerified(true);
-  };
+  const { data: settings } = useSiteSettings();
 
   const handleLoginClick = () => {
     setShowAuthModal(true);
   };
 
-  const handleDashboardClick = () => {
-    setShowDashboard(true);
-  };
-
-  const handleModelClick = (model: Model) => {
-    setSelectedModel(model);
-  };
-
-  // Show Age Gate if not verified
-  if (!isAgeVerified) {
-    return <AgeGate onVerified={handleAgeVerified} />;
-  }
-
-  // Show dashboard if user is logged in and clicked on dashboard
-  if (showDashboard && isAuthenticated && user) {
-    return (
-      <div className="min-h-screen flex flex-col bg-background">
-        <Navbar
-          onLoginClick={handleLoginClick}
-          onDashboardClick={() => setShowDashboard(false)}
-        />
-        <main className="flex-1 pt-20">
-          {user.role === "ADMIN" ? <AdminDashboard /> : <ModelDashboard />}
-        </main>
-        <Footer />
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      <Navbar
-        onLoginClick={handleLoginClick}
-        onDashboardClick={handleDashboardClick}
-      />
+      <Navbar onLoginClick={handleLoginClick} />
 
       <main className="flex-1">
         {/* Hero Section */}
-        <HeroSection onJoinClick={handleLoginClick} />
+        <HeroSection
+          onJoinClick={handleLoginClick}
+          tagline={settings?.heroTagline}
+          ctaText={settings?.heroCtaText}
+        />
 
         {/* Featured Models Section */}
         <section className="py-20 px-4 bg-gradient-to-b from-black to-background">
@@ -156,7 +51,7 @@ export default function BellasGlamourPage() {
         </section>
 
         {/* Models Grid */}
-        <ModelGrid onModelClick={handleModelClick as any} />
+        <ModelGrid />
 
         {/* About Section */}
         <section id="nosotros" className="py-20 px-4 bg-card">
@@ -168,36 +63,34 @@ export default function BellasGlamourPage() {
                 viewport={{ once: true }}
               >
                 <h2 className="font-serif text-4xl md:text-5xl font-bold text-white mb-6">
-                  Sobre <span className="text-gold-gradient">Bellas Glamour</span>
+                  {settings?.aboutTitle || (
+                    <>Sobre <span className="text-gold-gradient">Bellas Glamour</span></>
+                  )}
                 </h2>
                 <p className="text-gray-300 mb-6 leading-relaxed">
-                  Somos una agencia de modelos premium exclusiva para adultos,
-                  dedicada a representar el talento más sofisticado y elegante del país.
-                  Con más de una década de experiencia, trabajamos con las marcas
-                  más prestigiosas del mundo de la moda de lujo, publicidad de alta gama
-                  y entretenimiento para adultos.
+                  {settings?.aboutText1 ||
+                    "Somos una agencia de modelos premium exclusiva para adultos, dedicada a representar el talento más sofisticado y elegante del país. Con más de una década de experiencia, trabajamos con las marcas más prestigiosas del mundo de la moda de lujo, publicidad de alta gama y entretenimiento para adultos."}
                 </p>
                 <p className="text-gray-400 mb-8">
-                  Nuestra misión es descubrir, desarrollar y promover modelos
-                  que destaquen por su belleza refinada, profesionalismo y carisma único,
-                  ofreciendo experiencias exclusivas para nuestros clientes más exigentes.
+                  {settings?.aboutText2 ||
+                    "Nuestra misión es descubrir, desarrollar y promover modelos que destaquen por su belleza refinada, profesionalismo y carisma único, ofreciendo experiencias exclusivas para nuestros clientes más exigentes."}
                 </p>
 
                 <div className="grid grid-cols-3 gap-6">
                   <div className="text-center">
                     <Crown className="w-8 h-8 mx-auto text-gold-400 mb-2" />
-                    <p className="text-3xl font-bold text-gold-400">150+</p>
-                    <p className="text-gray-400 text-sm">Modelos</p>
+                    <p className="text-3xl font-bold text-gold-400">{settings?.stat1Value || "150+"}</p>
+                    <p className="text-gray-400 text-sm">{settings?.stat1Label || "Modelos"}</p>
                   </div>
                   <div className="text-center">
                     <Gem className="w-8 h-8 mx-auto text-gold-400 mb-2" />
-                    <p className="text-3xl font-bold text-gold-400">500+</p>
-                    <p className="text-gray-400 text-sm">Proyectos</p>
+                    <p className="text-3xl font-bold text-gold-400">{settings?.stat2Value || "500+"}</p>
+                    <p className="text-gray-400 text-sm">{settings?.stat2Label || "Proyectos"}</p>
                   </div>
                   <div className="text-center">
                     <Award className="w-8 h-8 mx-auto text-gold-400 mb-2" />
-                    <p className="text-3xl font-bold text-gold-400">10+</p>
-                    <p className="text-gray-400 text-sm">Años</p>
+                    <p className="text-3xl font-bold text-gold-400">{settings?.stat3Value || "10+"}</p>
+                    <p className="text-gray-400 text-sm">{settings?.stat3Label || "Años"}</p>
                   </div>
                 </div>
               </motion.div>
@@ -210,7 +103,7 @@ export default function BellasGlamourPage() {
               >
                 <div className="aspect-[4/5] relative rounded-lg overflow-hidden">
                   <img
-                    src="https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=800&q=80"
+                    src={settings?.aboutImageUrl || "https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=800&q=80"}
                     alt="Fashion"
                     className="w-full h-full object-cover"
                   />
@@ -237,29 +130,29 @@ export default function BellasGlamourPage() {
             >
               <Gem className="w-8 h-8 mx-auto text-gold-400 mb-4" />
               <h2 className="font-serif text-4xl md:text-5xl font-bold text-white mb-4">
-                Servicios <span className="text-gold-gradient">Premium</span>
+                {settings?.servicesTitle || (<>Servicios <span className="text-gold-gradient">Premium</span></>)}
               </h2>
               <p className="text-gray-400 max-w-2xl mx-auto">
-                Experiencias exclusivas para nuestros clientes más distinguidos
+                {settings?.servicesSubtitle || "Experiencias exclusivas para nuestros clientes más distinguidos"}
               </p>
             </motion.div>
 
             <div className="grid md:grid-cols-3 gap-6">
               {[
                 {
-                  title: "Eventos Exclusivos",
-                  description: "Presencia de alto nivel para eventos privados y galas VIP.",
-                  icon: "🥂",
+                  title: settings?.service1Title || "Eventos Exclusivos",
+                  description: settings?.service1Desc || "Presencia de alto nivel para eventos privados y galas VIP.",
+                  icon: settings?.service1Icon || "🥂",
                 },
                 {
-                  title: "Campañas de Lujo",
-                  description: "Fotografía artística y campañas publicitarias premium para marcas exclusivas.",
-                  icon: "📸",
+                  title: settings?.service2Title || "Campañas de Lujo",
+                  description: settings?.service2Desc || "Fotografía artística y campañas publicitarias premium para marcas exclusivas.",
+                  icon: settings?.service2Icon || "📸",
                 },
                 {
-                  title: "Experiencias VIP",
-                  description: "Servicios personalizados para clientes selectos y eventos corporativos de alto nivel.",
-                  icon: "💎",
+                  title: settings?.service3Title || "Experiencias VIP",
+                  description: settings?.service3Desc || "Servicios personalizados para clientes selectos y eventos corporativos de alto nivel.",
+                  icon: settings?.service3Icon || "💎",
                 },
               ].map((service, index) => (
                 <motion.div
@@ -289,16 +182,13 @@ export default function BellasGlamourPage() {
             >
               <Crown className="w-12 h-12 mx-auto text-gold-400 mb-6" />
               <h2 className="font-serif text-3xl md:text-4xl font-bold text-white mb-4">
-                Acceso <span className="text-gold-gradient">VIP</span>
+                {settings?.membershipTitle || (<>Acceso <span className="text-gold-gradient">VIP</span></>)}
               </h2>
               <p className="text-gray-300 mb-8 max-w-2xl mx-auto">
-                Únete a nuestra comunidad exclusiva y accede a contenido premium,
-                eventos privados y oportunidades únicas con nuestras modelos más solicitadas.
+                {settings?.membershipText ||
+                  "Únete a nuestra comunidad exclusiva y accede a contenido premium, eventos privados y oportunidades únicas con nuestras modelos más solicitadas."}
               </p>
-              <button
-                onClick={handleLoginClick}
-                className="btn-luxury text-lg px-10 py-4"
-              >
+              <button onClick={handleLoginClick} className="btn-luxury text-lg px-10 py-4">
                 Solicitar Membresía
               </button>
             </motion.div>
@@ -330,18 +220,18 @@ export default function BellasGlamourPage() {
               className="bg-black/50 border border-gold-500/20 rounded-lg p-8 text-center"
             >
               <p className="text-gray-300 mb-4">
-                <strong className="text-gold-400">Email:</strong> vip@bellasglamour.com
+                <strong className="text-gold-400">Email:</strong>{" "}
+                {settings?.contactEmail || "vip@bellasglamour.com"}
               </p>
               <p className="text-gray-300 mb-4">
-                <strong className="text-gold-400">Teléfono:</strong> +52 (55) 1234-5678
+                <strong className="text-gold-400">Teléfono:</strong>{" "}
+                {settings?.contactPhone || "+52 (55) 1234-5678"}
               </p>
               <p className="text-gray-300 mb-6">
-                <strong className="text-gold-400">Ubicación:</strong> Ciudad de México, México
+                <strong className="text-gold-400">Ubicación:</strong>{" "}
+                {settings?.contactLocation || "Ciudad de México, México"}
               </p>
-              <button
-                onClick={handleLoginClick}
-                className="btn-luxury"
-              >
+              <button onClick={handleLoginClick} className="btn-luxury">
                 Únete como Modelo
               </button>
             </motion.div>
@@ -359,16 +249,10 @@ export default function BellasGlamourPage() {
 
       <Footer />
 
-      {/* Modals */}
+      {/* Auth Modal */}
       <AuthModal
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
-      />
-
-      <ModelProfile
-        model={selectedModel}
-        isOpen={!!selectedModel}
-        onClose={() => setSelectedModel(null)}
       />
     </div>
   );

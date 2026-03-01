@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { AdminModelsManager } from "@/components/bellas/admin/AdminModelsManager";
 import { AdminSliderManager } from "@/components/bellas/admin/AdminSliderManager";
+import { AdminSiteSettings } from "@/components/bellas/admin/AdminSiteSettings";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface PendingModel {
@@ -295,6 +296,10 @@ export function AdminDashboard() {
                 <Image className="w-4 h-4" />
                 Home Slider
               </TabsTrigger>
+              <TabsTrigger value="sitio" className="gap-2">
+                <Settings className="w-4 h-4" />
+                Sitio Web
+              </TabsTrigger>
             </TabsList>
           </div>
 
@@ -563,6 +568,17 @@ export function AdminDashboard() {
               transition={{ delay: 0.2 }}
             >
               <AdminSliderManager />
+            </motion.div>
+          </TabsContent>
+
+          <TabsContent value="sitio" className="outline-none">
+            {/* ─── Panel: Configuración del Sitio ─── */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <AdminSiteSettings />
             </motion.div>
           </TabsContent>
         </Tabs>

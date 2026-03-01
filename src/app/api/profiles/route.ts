@@ -25,6 +25,8 @@ const profileUpdateSchema = z.object({
   instagram: z.string().nullish(),
   twitter: z.string().nullish(),
   tiktok: z.string().nullish(),
+  phoneNumber: z.string().regex(/^\+?\d{7,15}$/, "Formato de teléfono inválido (ej: +521234567890)").nullish().or(z.literal("")),
+  whatsappAvailable: z.boolean().nullish(),
 });
 
 // GET /api/profiles - Get current user's profile

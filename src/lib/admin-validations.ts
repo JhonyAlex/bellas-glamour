@@ -24,6 +24,8 @@ export const adminProfileUpdateSchema = z.object({
   instagram: z.string().url("URL de Instagram inválida").nullish().or(z.literal("")),
   twitter: z.string().url("URL de Twitter inválida").nullish().or(z.literal("")),
   tiktok: z.string().url("URL de TikTok inválida").nullish().or(z.literal("")),
+  phoneNumber: z.string().regex(/^\+?\d{7,15}$/, "Formato de teléfono inválido (ej: +521234567890)").nullish().or(z.literal("")),
+  whatsappAvailable: z.boolean().nullish(),
 });
 
 export type AdminProfileUpdateInput = z.infer<typeof adminProfileUpdateSchema>;

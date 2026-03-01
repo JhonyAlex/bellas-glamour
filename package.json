@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 3000",
-    "build": "prisma generate && next build",
+    "build": "prisma generate && prisma migrate deploy && next build",
     "postbuild": "cp -r .next/static .next/standalone/.next/ && cp -r public .next/standalone/ || true",
     "start": "node .next/standalone/server.js",
     "lint": "eslint .",

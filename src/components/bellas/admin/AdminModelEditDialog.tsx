@@ -66,6 +66,8 @@ export function AdminModelEditDialog({
                 instagram: model.instagram,
                 twitter: model.twitter,
                 tiktok: model.tiktok,
+                phoneNumber: model.phoneNumber,
+                whatsappAvailable: model.whatsappAvailable,
             });
         }
     }, [model, form]);
@@ -274,6 +276,27 @@ export function AdminModelEditDialog({
                                     error={errors.tiktok?.message}
                                     {...form.register("tiktok")}
                                 />
+
+                                <div className="pt-4 border-t border-gold-500/10">
+                                    <p className="text-gray-400 text-sm font-medium mb-3">WhatsApp</p>
+                                    <FormField
+                                        label="Número de teléfono"
+                                        placeholder="+521234567890"
+                                        error={errors.phoneNumber?.message}
+                                        {...form.register("phoneNumber")}
+                                    />
+                                    <div className="flex items-center gap-3 mt-3">
+                                        <input
+                                            type="checkbox"
+                                            id="whatsappAvailable"
+                                            className="w-4 h-4 rounded border-gold-500/30 bg-secondary accent-gold-500"
+                                            {...form.register("whatsappAvailable")}
+                                        />
+                                        <Label htmlFor="whatsappAvailable" className="text-gray-400 text-sm cursor-pointer">
+                                            Mostrar botón de WhatsApp en el perfil público
+                                        </Label>
+                                    </div>
+                                </div>
                             </TabsContent>
                         </Tabs>
 
