@@ -64,6 +64,14 @@ export async function GET(request: NextRequest) {
                             createdAt: true,
                         },
                     },
+                    photos: {
+                        take: 4,
+                        select: {
+                            id: true,
+                            url: true,
+                        },
+                        orderBy: { order: "asc" },
+                    },
                     _count: {
                         select: { photos: true },
                     },

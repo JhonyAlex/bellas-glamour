@@ -289,13 +289,34 @@ export function AdminModelsTable({
 
                                     {/* Fotos */}
                                     <td className="py-3 px-4">
-                                        <button
-                                            onClick={() => onViewGallery(model.id)}
-                                            className="text-gray-300 text-sm flex items-center gap-1.5 hover:text-gold-400 transition-colors"
-                                        >
-                                            <Image className="w-3.5 h-3.5 text-gray-500" />
-                                            {model._count.photos}
-                                        </button>
+                                        <div className="flex flex-col gap-2">
+                                            {model.photos && model.photos.length > 0 ? (
+                                                <div
+                                                    className="flex gap-1 cursor-pointer hover:opacity-80 transition-opacity"
+                                                    onClick={() => onViewGallery(model.id)}
+                                                    title={`Ver ${model._count.photos} fotos`}
+                                                >
+                                                    {model.photos.map((photo) => (
+                                                        <div key={photo.id} className="w-8 h-8 rounded bg-gold-500/10 overflow-hidden flex-shrink-0">
+                                                            <img src={photo.url} alt="preview" className="w-full h-full object-cover" />
+                                                        </div>
+                                                    ))}
+                                                    {model._count.photos > 4 && (
+                                                        <div className="w-8 h-8 rounded bg-gold-500/20 text-gold-400 text-[10px] font-bold flex items-center justify-center flex-shrink-0">
+                                                            +{model._count.photos - 4}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            ) : (
+                                                <button
+                                                    onClick={() => onViewGallery(model.id)}
+                                                    className="text-gray-300 text-sm flex items-center gap-1.5 hover:text-gold-400 transition-colors"
+                                                >
+                                                    <Image className="w-3.5 h-3.5 text-gray-500" />
+                                                    {model._count.photos}
+                                                </button>
+                                            )}
+                                        </div>
                                     </td>
 
                                     {/* Fecha */}
@@ -389,7 +410,26 @@ export function AdminModelsTable({
                             </span>
                         </div>
 
-                        <div className="flex gap-2">
+                        {/* Fotos Preview Mobile */}
+                        {model.photos && model.photos.length > 0 && (
+                            <div
+                                className="flex gap-1.5 overflow-x-auto pb-1 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-none cursor-pointer"
+                                onClick={() => onViewGallery(model.id)}
+                            >
+                                {model.photos.map((photo) => (
+                                    <div key={photo.id} className="w-16 h-16 rounded-md bg-gold-500/10 overflow-hidden flex-shrink-0">
+                                        <img src={photo.url} alt="" className="w-full h-full object-cover" />
+                                    </div>
+                                ))}
+                                {model._count.photos > 4 && (
+                                    <div className="w-16 h-16 rounded-md bg-gold-500/20 text-gold-400 text-xs font-bold flex items-center justify-center flex-shrink-0">
+                                        +{model._count.photos - 4}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        <div className="flex gap-2 pt-1 border-t border-gold-500/10">
                             <Button
                                 variant="outline"
                                 size="sm"

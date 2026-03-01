@@ -43,6 +43,10 @@ export interface AdminModelListItem {
     _count: {
         photos: number;
     };
+    photos: Array<{
+        id: string;
+        url: string;
+    }>;
 }
 
 export interface AdminModelDetail extends Omit<AdminModelListItem, "_count"> {

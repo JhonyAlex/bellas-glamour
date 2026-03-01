@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { AdminModelsManager } from "@/components/bellas/admin/AdminModelsManager";
 import { AdminSliderManager } from "@/components/bellas/admin/AdminSliderManager";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface PendingModel {
   id: string;
@@ -274,279 +275,297 @@ export function AdminDashboard() {
           </p>
         </motion.div>
 
-        {/* ─── Stats (siempre visibles) ─── */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="grid grid-cols-2 gap-3"
-        >
-          <div className="bg-card border border-gold-500/20 rounded-lg p-4 text-center">
-            <Users className="w-5 h-5 mx-auto text-gold-400 mb-1.5" />
-            <p className="text-xl sm:text-2xl font-bold text-white">{pendingModels.length}</p>
-            <p className="text-gray-400 text-xs sm:text-sm">Modelos Pendientes</p>
+        <Tabs defaultValue="aprobaciones" className="w-full">
+          <div className="overflow-x-auto pb-2 mb-4 scrollbar-none">
+            <TabsList className="bg-card border border-gold-500/20 w-max sm:w-full justify-start sm:justify-center">
+              <TabsTrigger value="aprobaciones" className="gap-2">
+                <Check className="w-4 h-4" />
+                Aprobaciones
+                {(pendingModels.length > 0 || pendingPhotos.length > 0) && (
+                  <span className="bg-gold-500 text-black text-xs font-bold px-1.5 py-0.5 rounded-full ml-1">
+                    {pendingModels.length + pendingPhotos.length}
+                  </span>
+                )}
+              </TabsTrigger>
+              <TabsTrigger value="directorio" className="gap-2">
+                <Settings className="w-4 h-4" />
+                Directorio
+              </TabsTrigger>
+              <TabsTrigger value="slider" className="gap-2">
+                <Image className="w-4 h-4" />
+                Home Slider
+              </TabsTrigger>
+            </TabsList>
           </div>
-          <div className="bg-card border border-gold-500/20 rounded-lg p-4 text-center">
-            <Camera className="w-5 h-5 mx-auto text-gold-400 mb-1.5" />
-            <p className="text-xl sm:text-2xl font-bold text-white">{pendingPhotos.length}</p>
-            <p className="text-gray-400 text-xs sm:text-sm">Fotos Pendientes</p>
-          </div>
-        </motion.div>
 
-        {/* ─── Panel: Modelos Pendientes ─── */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-        >
-          <CollapsiblePanel
-            title="Modelos Pendientes"
-            icon={Users}
-            badge={pendingModels.length}
-            defaultOpen={pendingModels.length > 0}
-          >
-            {pendingModels.length === 0 ? (
-              <div className="text-center py-8">
-                <Check className="w-10 h-10 mx-auto text-green-400 mb-3" />
-                <p className="text-gray-400 text-sm">No hay modelos pendientes</p>
+          <TabsContent value="aprobaciones" className="space-y-4 outline-none">
+            {/* ─── Stats (siempre visibles) ─── */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="grid grid-cols-2 gap-3"
+            >
+              <div className="bg-card border border-gold-500/20 rounded-lg p-4 text-center">
+                <Users className="w-5 h-5 mx-auto text-gold-400 mb-1.5" />
+                <p className="text-xl sm:text-2xl font-bold text-white">{pendingModels.length}</p>
+                <p className="text-gray-400 text-xs sm:text-sm">Modelos Pendientes</p>
               </div>
-            ) : (
-              <div className="space-y-3 mt-3">
-                {pendingModels.map((model) => (
-                  <div
-                    key={model.id}
-                    className="bg-black/20 border border-gold-500/10 rounded-lg overflow-hidden"
-                  >
-                    {/* Model Header */}
-                    <button
-                      className="w-full p-3 flex items-center justify-between hover:bg-gold-500/5 transition-colors"
-                      onClick={() =>
-                        setExpandedModel(expandedModel === model.id ? null : model.id)
-                      }
-                    >
-                      <div className="flex items-center gap-3 min-w-0">
-                        <div className="w-10 h-10 rounded-full bg-gold-500/20 flex items-center justify-center overflow-hidden flex-shrink-0">
-                          {model.photos[0] ? (
-                            <img
-                              src={model.photos[0].url}
-                              alt=""
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <Users className="w-5 h-5 text-gold-400" />
-                          )}
-                        </div>
-                        <div className="text-left min-w-0">
-                          <p className="text-white text-sm font-medium truncate">
-                            {model.artisticName || model.user.name || "Sin nombre"}
-                          </p>
-                          <p className="text-gray-500 text-xs truncate">{model.user.email}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2 flex-shrink-0">
-                        <span className="text-gray-500 text-xs hidden sm:block">
-                          {new Date(model.createdAt).toLocaleDateString("es-ES")}
-                        </span>
-                        <motion.div
-                          animate={{ rotate: expandedModel === model.id ? 180 : 0 }}
-                          transition={{ duration: 0.2 }}
-                        >
-                          <ChevronDown className="w-4 h-4 text-gray-400" />
-                        </motion.div>
-                      </div>
-                    </button>
+              <div className="bg-card border border-gold-500/20 rounded-lg p-4 text-center">
+                <Camera className="w-5 h-5 mx-auto text-gold-400 mb-1.5" />
+                <p className="text-xl sm:text-2xl font-bold text-white">{pendingPhotos.length}</p>
+                <p className="text-gray-400 text-xs sm:text-sm">Fotos Pendientes</p>
+              </div>
+            </motion.div>
 
-                    {/* Expanded Details */}
-                    <AnimatePresence>
-                      {expandedModel === model.id && (
-                        <motion.div
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: "auto", opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          className="overflow-hidden border-t border-gold-500/10"
+            {/* ─── Panel: Modelos Pendientes ─── */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <CollapsiblePanel
+                title="Modelos Pendientes"
+                icon={Users}
+                badge={pendingModels.length}
+                defaultOpen={pendingModels.length > 0}
+              >
+                {pendingModels.length === 0 ? (
+                  <div className="text-center py-8">
+                    <Check className="w-10 h-10 mx-auto text-green-400 mb-3" />
+                    <p className="text-gray-400 text-sm">No hay modelos pendientes</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3 mt-3">
+                    {pendingModels.map((model) => (
+                      <div
+                        key={model.id}
+                        className="bg-black/20 border border-gold-500/10 rounded-lg overflow-hidden"
+                      >
+                        {/* Model Header */}
+                        <button
+                          className="w-full p-3 flex items-center justify-between hover:bg-gold-500/5 transition-colors"
+                          onClick={() =>
+                            setExpandedModel(expandedModel === model.id ? null : model.id)
+                          }
                         >
-                          <div className="p-3 space-y-3">
-                            {/* Info */}
-                            {model.bio && (
-                              <div>
-                                <p className="text-gray-500 text-xs">Biografía</p>
-                                <p className="text-gray-300 text-sm">{model.bio}</p>
-                              </div>
-                            )}
-                            <div className="flex flex-wrap gap-4 text-sm">
-                              {model.height && (
-                                <div>
-                                  <p className="text-gray-500 text-xs">Altura</p>
-                                  <p className="text-white">{model.height} cm</p>
-                                </div>
+                          <div className="flex items-center gap-3 min-w-0">
+                            <div className="w-10 h-10 rounded-full bg-gold-500/20 flex items-center justify-center overflow-hidden flex-shrink-0">
+                              {model.photos[0] ? (
+                                <img
+                                  src={model.photos[0].url}
+                                  alt=""
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                <Users className="w-5 h-5 text-gold-400" />
                               )}
-                              {model.eyeColor && (
-                                <div>
-                                  <p className="text-gray-500 text-xs">Ojos</p>
-                                  <p className="text-white capitalize">{model.eyeColor}</p>
-                                </div>
-                              )}
-                              <div>
-                                <p className="text-gray-500 text-xs">Fotos</p>
-                                <p className="text-white">{model.photos.length}</p>
-                              </div>
                             </div>
-
-                            {/* Photos Preview */}
-                            {model.photos.length > 0 && (
-                              <div className="grid grid-cols-3 sm:grid-cols-4 gap-1.5">
-                                {model.photos.slice(0, 4).map((photo) => (
-                                  <div
-                                    key={photo.id}
-                                    className="aspect-square rounded overflow-hidden"
-                                  >
-                                    <img
-                                      src={photo.url}
-                                      alt=""
-                                      className="w-full h-full object-cover"
-                                    />
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-
-                            {/* Actions */}
-                            <div className="flex gap-2 pt-2">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleRejectModel(model.id)}
-                                className="flex-1 border-red-500/30 text-red-400 hover:bg-red-500/10 h-9 text-xs sm:text-sm"
-                              >
-                                <X className="w-4 h-4 mr-1" />
-                                Rechazar
-                              </Button>
-                              <Button
-                                size="sm"
-                                onClick={() => handleApproveModel(model.id)}
-                                className="flex-1 bg-green-500 hover:bg-green-600 text-white h-9 text-xs sm:text-sm"
-                              >
-                                <Check className="w-4 h-4 mr-1" />
-                                Aprobar
-                              </Button>
+                            <div className="text-left min-w-0">
+                              <p className="text-white text-sm font-medium truncate">
+                                {model.artisticName || model.user.name || "Sin nombre"}
+                              </p>
+                              <p className="text-gray-500 text-xs truncate">{model.user.email}</p>
                             </div>
                           </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CollapsiblePanel>
-        </motion.div>
+                          <div className="flex items-center gap-2 flex-shrink-0">
+                            <span className="text-gray-500 text-xs hidden sm:block">
+                              {new Date(model.createdAt).toLocaleDateString("es-ES")}
+                            </span>
+                            <motion.div
+                              animate={{ rotate: expandedModel === model.id ? 180 : 0 }}
+                              transition={{ duration: 0.2 }}
+                            >
+                              <ChevronDown className="w-4 h-4 text-gray-400" />
+                            </motion.div>
+                          </div>
+                        </button>
 
-        {/* ─── Panel: Fotos Pendientes ─── */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-        >
-          <CollapsiblePanel
-            title="Fotos Pendientes"
-            icon={Camera}
-            badge={pendingPhotos.length}
-            defaultOpen={pendingPhotos.length > 0}
-          >
-            {pendingPhotos.length === 0 ? (
-              <div className="text-center py-8">
-                <Check className="w-10 h-10 mx-auto text-green-400 mb-3" />
-                <p className="text-gray-400 text-sm">No hay fotos pendientes</p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
-                {pendingPhotos.map((photo) => (
-                  <div
-                    key={photo.id}
-                    className="bg-black/20 border border-gold-500/10 rounded-lg overflow-hidden"
-                  >
-                    {/* Photo */}
-                    <div className="aspect-square relative">
-                      <img
-                        src={photo.url}
-                        alt=""
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
+                        {/* Expanded Details */}
+                        <AnimatePresence>
+                          {expandedModel === model.id && (
+                            <motion.div
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: "auto", opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              className="overflow-hidden border-t border-gold-500/10"
+                            >
+                              <div className="p-3 space-y-3">
+                                {/* Info */}
+                                {model.bio && (
+                                  <div>
+                                    <p className="text-gray-500 text-xs">Biografía</p>
+                                    <p className="text-gray-300 text-sm">{model.bio}</p>
+                                  </div>
+                                )}
+                                <div className="flex flex-wrap gap-4 text-sm">
+                                  {model.height && (
+                                    <div>
+                                      <p className="text-gray-500 text-xs">Altura</p>
+                                      <p className="text-white">{model.height} cm</p>
+                                    </div>
+                                  )}
+                                  {model.eyeColor && (
+                                    <div>
+                                      <p className="text-gray-500 text-xs">Ojos</p>
+                                      <p className="text-white capitalize">{model.eyeColor}</p>
+                                    </div>
+                                  )}
+                                  <div>
+                                    <p className="text-gray-500 text-xs">Fotos</p>
+                                    <p className="text-white">{model.photos.length}</p>
+                                  </div>
+                                </div>
 
-                    {/* Info + Actions */}
-                    <div className="p-3 space-y-2">
-                      <div className="min-w-0">
-                        <p className="text-white text-sm font-medium truncate">
-                          {photo.profile.artisticName ||
-                            photo.profile.user.name ||
-                            "Sin nombre"}
-                        </p>
-                        <p className="text-gray-500 text-xs truncate">
-                          {photo.profile.user.email}
-                        </p>
+                                {/* Photos Preview */}
+                                {model.photos.length > 0 && (
+                                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-1.5">
+                                    {model.photos.slice(0, 4).map((photo) => (
+                                      <div
+                                        key={photo.id}
+                                        className="aspect-square rounded overflow-hidden"
+                                      >
+                                        <img
+                                          src={photo.url}
+                                          alt=""
+                                          className="w-full h-full object-cover"
+                                        />
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+
+                                {/* Actions */}
+                                <div className="flex gap-2 pt-2">
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => handleRejectModel(model.id)}
+                                    className="flex-1 border-red-500/30 text-red-400 hover:bg-red-500/10 h-9 text-xs sm:text-sm"
+                                  >
+                                    <X className="w-4 h-4 mr-1" />
+                                    Rechazar
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    onClick={() => handleApproveModel(model.id)}
+                                    className="flex-1 bg-green-500 hover:bg-green-600 text-white h-9 text-xs sm:text-sm"
+                                  >
+                                    <Check className="w-4 h-4 mr-1" />
+                                    Aprobar
+                                  </Button>
+                                </div>
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
                       </div>
-                      <p className="text-gray-500 text-xs flex items-center gap-1">
-                        <Clock className="w-3 h-3" />
-                        {new Date(photo.uploadedAt).toLocaleDateString("es-ES")}
-                      </p>
-
-                      <div className="flex gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleRejectPhoto(photo.id)}
-                          className="flex-1 border-red-500/30 text-red-400 hover:bg-red-500/10 h-8 text-xs"
-                        >
-                          <X className="w-3.5 h-3.5 mr-1" />
-                          Rechazar
-                        </Button>
-                        <Button
-                          size="sm"
-                          onClick={() => handleApprovePhoto(photo.id)}
-                          className="flex-1 bg-green-500 hover:bg-green-600 text-white h-8 text-xs"
-                        >
-                          <Check className="w-3.5 h-3.5 mr-1" />
-                          Aprobar
-                        </Button>
-                      </div>
-                    </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-            )}
-          </CollapsiblePanel>
-        </motion.div>
+                )}
+              </CollapsiblePanel>
+            </motion.div>
 
-        {/* ─── Panel: Slider del Home ─── */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.35 }}
-        >
-          <CollapsiblePanel
-            title="Slider del Home"
-            icon={Image}
-          >
-            <AdminSliderManager />
-          </CollapsiblePanel>
-        </motion.div>
+            {/* ─── Panel: Fotos Pendientes ─── */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+            >
+              <CollapsiblePanel
+                title="Fotos Pendientes"
+                icon={Camera}
+                badge={pendingPhotos.length}
+                defaultOpen={pendingPhotos.length > 0}
+              >
+                {pendingPhotos.length === 0 ? (
+                  <div className="text-center py-8">
+                    <Check className="w-10 h-10 mx-auto text-green-400 mb-3" />
+                    <p className="text-gray-400 text-sm">No hay fotos pendientes</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
+                    {pendingPhotos.map((photo) => (
+                      <div
+                        key={photo.id}
+                        className="bg-black/20 border border-gold-500/10 rounded-lg overflow-hidden"
+                      >
+                        {/* Photo */}
+                        <div className="aspect-square relative">
+                          <img
+                            src={photo.url}
+                            alt=""
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
 
-        {/* ─── Panel: Gestión de Modelos ─── */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-        >
-          <CollapsiblePanel
-            title="Gestión de Modelos"
-            icon={Settings}
-          >
-            <div className="mt-3">
+                        {/* Info + Actions */}
+                        <div className="p-3 space-y-2">
+                          <div className="min-w-0">
+                            <p className="text-white text-sm font-medium truncate">
+                              {photo.profile.artisticName ||
+                                photo.profile.user.name ||
+                                "Sin nombre"}
+                            </p>
+                            <p className="text-gray-500 text-xs truncate">
+                              {photo.profile.user.email}
+                            </p>
+                          </div>
+                          <p className="text-gray-500 text-xs flex items-center gap-1">
+                            <Clock className="w-3 h-3" />
+                            {new Date(photo.uploadedAt).toLocaleDateString("es-ES")}
+                          </p>
+
+                          <div className="flex gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleRejectPhoto(photo.id)}
+                              className="flex-1 border-red-500/30 text-red-400 hover:bg-red-500/10 h-8 text-xs"
+                            >
+                              <X className="w-3.5 h-3.5 mr-1" />
+                              Rechazar
+                            </Button>
+                            <Button
+                              size="sm"
+                              onClick={() => handleApprovePhoto(photo.id)}
+                              className="flex-1 bg-green-500 hover:bg-green-600 text-white h-8 text-xs"
+                            >
+                              <Check className="w-3.5 h-3.5 mr-1" />
+                              Aprobar
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CollapsiblePanel>
+            </motion.div>
+          </TabsContent>
+
+          <TabsContent value="directorio" className="outline-none">
+            {/* ─── Panel: Gestión de Modelos ─── */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
               <AdminModelsManager />
-            </div>
-          </CollapsiblePanel>
-        </motion.div>
+            </motion.div>
+          </TabsContent>
+
+          <TabsContent value="slider" className="outline-none">
+            {/* ─── Panel: Slider del Home ─── */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <AdminSliderManager />
+            </motion.div>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
