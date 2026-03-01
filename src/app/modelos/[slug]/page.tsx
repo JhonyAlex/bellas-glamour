@@ -4,13 +4,30 @@ import { ModelProfilePage } from "@/components/bellas/ModelProfilePage";
 import type { Metadata } from "next";
 
 interface PageProps {
-  params: Promise<{ id: string }>;
+  params: Promise<{ slug: string }>;
+}
+
+// Busca perfil por slug o por id (retrocompatibilidad con links anteriores)
+async function findProfile(slug: string) {
+  return db.profile.findFirst({
+    where: {
+      OR: [{ slug }, { id: slug }],
+      status: "APPROVED",
+    },
+    include: {
+      user: { select: { id: true, name: true, image: true } },
+      photos: {
+        where: { status: "APPROVED" },
+        orderBy: { order: "asc" },
+      },
+    },
+  });
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { id } = await params;
-  const profile = await db.profile.findUnique({
-    where: { id },
+  const { slug } = await params;
+  const profile = await db.profile.findFirst({
+    where: { OR: [{ slug }, { id: slug }] },
     select: { artisticName: true, bio: true },
   });
 
@@ -25,26 +42,18 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function ModeloPage({ params }: PageProps) {
-  const { id } = await params;
+  const { slug } = await params;
 
-  const profile = await db.profile.findUnique({
-    where: { id, status: "APPROVED" },
-    include: {
-      user: { select: { id: true, name: true, image: true } },
-      photos: {
-        where: { status: "APPROVED" },
-        orderBy: { order: "asc" },
-      },
-    },
-  });
+  const profile = await findProfile(slug);
 
   if (!profile) notFound();
 
   // Incrementar vistas (fire and forget)
-  db.profile.update({ where: { id }, data: { views: { increment: 1 } } }).catch(() => {});
+  db.profile.update({ where: { id: profile.id }, data: { views: { increment: 1 } } }).catch(() => {});
 
   const model = {
     id: profile.id,
+    slug: profile.slug,
     artisticName: profile.artisticName,
     bio: profile.bio,
     height: profile.height,
@@ -57,6 +66,9 @@ export default async function ModeloPage({ params }: PageProps) {
     hobbies: profile.hobbies,
     languages: profile.languages,
     skills: profile.skills,
+    experience: profile.experience,
+    specialties: profile.specialties,
+    availability: profile.availability,
     location: profile.location,
     nationality: profile.nationality,
     instagram: profile.instagram,

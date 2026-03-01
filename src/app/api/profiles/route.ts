@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
+import { slugify } from "@/lib/slugify";
 import { z } from "zod";
 
 const profileUpdateSchema = z.object({
@@ -100,6 +101,15 @@ export async function PUT(request: NextRequest) {
     const updateData: Record<string, unknown> = { ...validatedData };
     if (validatedData.birthDate) {
       updateData.birthDate = new Date(validatedData.birthDate);
+    }
+
+    // Generar slug si se actualizó el nombre artístico
+    if (validatedData.artisticName) {
+      const baseSlug = slugify(validatedData.artisticName);
+      const existing = await db.profile.findFirst({
+        where: { slug: baseSlug, NOT: { userId: user.id } },
+      });
+      updateData.slug = existing ? `${baseSlug}-${existingProfile.id.slice(-6)}` : baseSlug;
     }
 
     const profile = await db.profile.update({

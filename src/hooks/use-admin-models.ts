@@ -6,6 +6,7 @@ import { useCallback } from "react";
 
 export interface AdminModelListItem {
     id: string;
+    slug: string | null;
     artisticName: string | null;
     bio: string | null;
     birthDate: string | null;
@@ -27,6 +28,8 @@ export interface AdminModelListItem {
     instagram: string | null;
     twitter: string | null;
     tiktok: string | null;
+    phoneNumber: string | null;
+    whatsappAvailable: boolean;
     status: "PENDING" | "APPROVED" | "REJECTED";
     featured: boolean;
     views: number;
@@ -298,6 +301,27 @@ export function useUploadAdminPhoto() {
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: ["admin-models"] });
             queryClient.invalidateQueries({ queryKey: ["admin-model", variables.profileId] });
+            queryClient.invalidateQueries({ queryKey: ["public-models"] });
+        },
+    });
+}
+
+export function useDeleteModel() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: async (id: string) => {
+            const res = await fetch(`/api/admin/models/${id}`, {
+                method: "DELETE",
+            });
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                throw new Error(err.error || "Error al eliminar modelo");
+            }
+            return res.json();
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["admin-models"] });
             queryClient.invalidateQueries({ queryKey: ["public-models"] });
         },
     });

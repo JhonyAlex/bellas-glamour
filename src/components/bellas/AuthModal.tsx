@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Mail, Lock, User, Camera, Loader2, Shield, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -33,6 +34,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
   
   const { login, setProfile } = useAuthStore();
   const { toast } = useToast();
+  const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,6 +68,10 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
       
       onClose();
       resetForms();
+
+      // Redirigir según rol
+      if (data.user.role === "ADMIN") router.push("/admin");
+      else if (data.user.role === "MODEL") router.push("/dashboard");
     } catch (error) {
       toast({
         title: "Error",
@@ -134,6 +140,9 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
       
       onClose();
       resetForms();
+
+      // Redirigir según rol al registrarse
+      if (data.user.role === "MODEL") router.push("/dashboard");
     } catch (error) {
       toast({
         title: "Error",

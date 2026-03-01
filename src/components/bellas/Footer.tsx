@@ -142,6 +142,14 @@ export function Footer() {
           <p className="flex items-center mt-2 md:mt-0">
             Hecho con <Heart className="w-4 h-4 mx-1 text-gold-400" /> para adultos exigentes
           </p>
+          <a
+            href="https://www.cambiodigital.net"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-2 md:mt-0 text-xs text-gray-600 opacity-40 hover:opacity-70 transition-opacity duration-300"
+          >
+            Desarrollado por cambiodigital.net
+          </a>
         </div>
 
         {/* Legal Disclaimer */}

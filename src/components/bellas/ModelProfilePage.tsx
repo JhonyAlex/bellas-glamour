@@ -6,12 +6,14 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft, MapPin, Eye, Instagram, Twitter, ChevronLeft, ChevronRight,
+  Share2, Music2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Navbar } from "./Navbar";
 import { Footer } from "./Footer";
 import { AuthModal } from "./AuthModal";
 import { WhatsAppButton } from "./WhatsAppButton";
+import { useToast } from "@/hooks/use-toast";
 import type { Model } from "@/types/models";
 
 interface ModelProfilePageProps {
@@ -22,6 +24,7 @@ export function ModelProfilePage({ model }: ModelProfilePageProps) {
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
   const [showGallery, setShowGallery] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const { toast } = useToast();
 
   const displayName = model.artisticName || model.user.name || "Modelo";
   const placeholderImage = `https://picsum.photos/seed/${model.id}/800/1200`;
@@ -33,6 +36,32 @@ export function ModelProfilePage({ model }: ModelProfilePageProps) {
   const prevPhoto = () => {
     setCurrentPhotoIndex((prev) => (prev - 1 + model.photos.length) % model.photos.length);
   };
+
+  const handleShare = async () => {
+    const url = window.location.href;
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: displayName, text: `Conoce a ${displayName} en Bellas Glamour`, url });
+      } catch {
+        // cancelado por el usuario
+      }
+    } else {
+      await navigator.clipboard.writeText(url);
+      toast({ title: "¡Enlace copiado!", description: "El link del perfil fue copiado al portapapeles." });
+    }
+  };
+
+  // Tarjetas de características físicas
+  const physicalStats = [
+    { label: "Altura", value: model.height ? `${model.height} cm` : null },
+    { label: "Peso", value: model.weight ? `${model.weight} kg` : null },
+    { label: "Color de Ojos", value: model.eyeColor || null, capitalize: true },
+    { label: "Color de Cabello", value: model.hairColor || null, capitalize: true },
+    { label: "Tono de Piel", value: model.skinTone || null, capitalize: true },
+    { label: "Medidas", value: model.measurements || null },
+    { label: "Talla de Calzado", value: model.shoeSize ? String(model.shoeSize) : null },
+    { label: "Nacionalidad", value: model.nationality || null, capitalize: true },
+  ].filter((s) => s.value);
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -175,32 +204,16 @@ export function ModelProfilePage({ model }: ModelProfilePageProps) {
                 </div>
               )}
 
-              {/* Stats Grid */}
+              {/* Stats Grid — características físicas */}
               <div className="grid grid-cols-2 gap-4 mb-6">
-                {model.height && (
-                  <div className="bg-black/30 rounded-lg p-4 border border-gold-500/20">
-                    <p className="text-gray-400 text-sm mb-1">Altura</p>
-                    <p className="text-white font-semibold">{model.height} cm</p>
+                {physicalStats.map((stat) => (
+                  <div key={stat.label} className="bg-black/30 rounded-lg p-4 border border-gold-500/20">
+                    <p className="text-gray-400 text-sm mb-1">{stat.label}</p>
+                    <p className={`text-white font-semibold ${stat.capitalize ? "capitalize" : ""}`}>
+                      {stat.value}
+                    </p>
                   </div>
-                )}
-                {model.eyeColor && (
-                  <div className="bg-black/30 rounded-lg p-4 border border-gold-500/20">
-                    <p className="text-gray-400 text-sm mb-1">Color de Ojos</p>
-                    <p className="text-white font-semibold capitalize">{model.eyeColor}</p>
-                  </div>
-                )}
-                {model.hairColor && (
-                  <div className="bg-black/30 rounded-lg p-4 border border-gold-500/20">
-                    <p className="text-gray-400 text-sm mb-1">Color de Cabello</p>
-                    <p className="text-white font-semibold capitalize">{model.hairColor}</p>
-                  </div>
-                )}
-                {model.measurements && (
-                  <div className="bg-black/30 rounded-lg p-4 border border-gold-500/20">
-                    <p className="text-gray-400 text-sm mb-1">Medidas</p>
-                    <p className="text-white font-semibold">{model.measurements}</p>
-                  </div>
-                )}
+                ))}
               </div>
 
               {/* Additional Info */}
@@ -227,6 +240,31 @@ export function ModelProfilePage({ model }: ModelProfilePageProps) {
                 </div>
               )}
 
+              {/* Información profesional */}
+              {(model.experience || model.specialties || model.availability) && (
+                <div className="mb-6 bg-black/20 rounded-lg p-4 border border-gold-500/10 space-y-3">
+                  <p className="text-gold-400 text-xs font-semibold uppercase tracking-wider">Información Profesional</p>
+                  {model.experience && (
+                    <div>
+                      <p className="text-gray-400 text-sm mb-1">Experiencia</p>
+                      <p className="text-white">{model.experience}</p>
+                    </div>
+                  )}
+                  {model.specialties && (
+                    <div>
+                      <p className="text-gray-400 text-sm mb-1">Especialidades</p>
+                      <p className="text-white">{model.specialties}</p>
+                    </div>
+                  )}
+                  {model.availability && (
+                    <div>
+                      <p className="text-gray-400 text-sm mb-1">Disponibilidad</p>
+                      <p className="text-white">{model.availability}</p>
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* WhatsApp Button */}
               {model.whatsappAvailable && model.phoneNumber && (
                 <div className="mb-6">
@@ -243,6 +281,7 @@ export function ModelProfilePage({ model }: ModelProfilePageProps) {
                       target="_blank"
                       rel="noopener noreferrer"
                       className="w-10 h-10 rounded-full border border-gold-500/30 flex items-center justify-center text-gold-400 hover:bg-gold-500/10 transition-colors"
+                      title="Instagram"
                     >
                       <Instagram className="w-5 h-5" />
                     </a>
@@ -253,19 +292,40 @@ export function ModelProfilePage({ model }: ModelProfilePageProps) {
                       target="_blank"
                       rel="noopener noreferrer"
                       className="w-10 h-10 rounded-full border border-gold-500/30 flex items-center justify-center text-gold-400 hover:bg-gold-500/10 transition-colors"
+                      title="Twitter / X"
                     >
                       <Twitter className="w-5 h-5" />
+                    </a>
+                  )}
+                  {model.tiktok && (
+                    <a
+                      href={`https://tiktok.com/@${model.tiktok.replace("@", "")}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-10 h-10 rounded-full border border-gold-500/30 flex items-center justify-center text-gold-400 hover:bg-gold-500/10 transition-colors"
+                      title="TikTok"
+                    >
+                      <Music2 className="w-5 h-5" />
                     </a>
                   )}
                 </div>
               )}
 
               {/* Stats */}
-              <div className="flex items-center space-x-6 text-gray-400 text-sm pt-4 border-t border-gold-500/20">
-                <div className="flex items-center">
+              <div className="flex items-center justify-between pt-4 border-t border-gold-500/20">
+                <div className="flex items-center text-gray-400 text-sm">
                   <Eye className="w-4 h-4 mr-1" />
                   {model.views} vistas
                 </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-gray-400 hover:text-gold-400 gap-2"
+                  onClick={handleShare}
+                >
+                  <Share2 className="w-4 h-4" />
+                  <span className="hidden sm:inline">Compartir</span>
+                </Button>
               </div>
             </div>
           </div>

@@ -4,12 +4,12 @@ import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
     Users, Loader2, Crown, ArrowLeft, Image as ImageIcon,
-    BarChart3,
+    BarChart3, Trash2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import {
-    useAdminModels, useAdminModel,
+    useAdminModels, useAdminModel, useDeleteModel,
     type AdminModelsFilters,
 } from "@/hooks/use-admin-models";
 import { AdminModelsTable } from "./AdminModelsTable";
@@ -17,6 +17,11 @@ import { AdminModelEditDialog } from "./AdminModelEditDialog";
 import { AdminModelGallery } from "./AdminModelGallery";
 import { AdminModelStatusControl } from "./AdminModelStatusControl";
 import { AdminExportButton } from "./AdminExportButton";
+import {
+    AlertDialog, AlertDialogAction, AlertDialogCancel,
+    AlertDialogContent, AlertDialogDescription, AlertDialogFooter,
+    AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 type ViewMode = "list" | "detail";
 
@@ -50,6 +55,8 @@ export function AdminModelsManager() {
         isLoading: isDetailLoading,
     } = useAdminModel(selectedProfileId);
 
+    const deleteModel = useDeleteModel();
+
     const handleFiltersChange = useCallback((newFilters: Partial<AdminModelsFilters>) => {
         setFilters((prev) => ({ ...prev, ...newFilters }));
     }, []);
@@ -68,6 +75,20 @@ export function AdminModelsManager() {
         setViewMode("list");
         setSelectedProfileId(null);
     }, []);
+
+    const handleDeleteModel = useCallback(async (id: string, name: string) => {
+        try {
+            await deleteModel.mutateAsync(id);
+            toast({ title: "Modelo eliminada", description: `${name} ha sido eliminada permanentemente.` });
+            handleBackToList();
+        } catch (error) {
+            toast({
+                title: "Error",
+                description: error instanceof Error ? error.message : "No se pudo eliminar la modelo",
+                variant: "destructive",
+            });
+        }
+    }, [deleteModel, toast, handleBackToList]);
 
     return (
         <div className="space-y-6">
@@ -249,6 +270,46 @@ export function AdminModelsManager() {
                                                     </span>
                                                 </p>
                                             )}
+                                        </div>
+
+                                        {/* Eliminar modelo */}
+                                        <div className="mt-4 pt-4 border-t border-red-500/20">
+                                            <AlertDialog>
+                                                <AlertDialogTrigger asChild>
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        className="w-full border-red-500/30 text-red-400 hover:bg-red-500/10 hover:border-red-500/50"
+                                                        disabled={deleteModel.isPending}
+                                                    >
+                                                        <Trash2 className="w-4 h-4 mr-2" />
+                                                        Eliminar modelo
+                                                    </Button>
+                                                </AlertDialogTrigger>
+                                                <AlertDialogContent className="bg-card border-gold-500/20">
+                                                    <AlertDialogHeader>
+                                                        <AlertDialogTitle className="text-white">
+                                                            ¿Eliminar a {detailData.artisticName || detailData.user?.name}?
+                                                        </AlertDialogTitle>
+                                                        <AlertDialogDescription className="text-gray-400">
+                                                            Esta acción eliminará permanentemente su perfil, todas sus fotos y su cuenta de acceso.
+                                                            <strong className="text-red-400 block mt-2">No se puede deshacer.</strong>
+                                                        </AlertDialogDescription>
+                                                    </AlertDialogHeader>
+                                                    <AlertDialogFooter>
+                                                        <AlertDialogCancel className="border-gold-500/20 text-gray-300">Cancelar</AlertDialogCancel>
+                                                        <AlertDialogAction
+                                                            className="bg-red-600 hover:bg-red-700 text-white"
+                                                            onClick={() => handleDeleteModel(
+                                                                detailData.id,
+                                                                detailData.artisticName || detailData.user?.name || "Modelo"
+                                                            )}
+                                                        >
+                                                            Sí, eliminar
+                                                        </AlertDialogAction>
+                                                    </AlertDialogFooter>
+                                                </AlertDialogContent>
+                                            </AlertDialog>
                                         </div>
                                     </div>
                                 </div>

@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { AdminModelsManager } from "@/components/bellas/admin/AdminModelsManager";
 import { AdminSliderManager } from "@/components/bellas/admin/AdminSliderManager";
 import { AdminSiteSettings } from "@/components/bellas/admin/AdminSiteSettings";
+import { AdminGuide, hasSeenGuide } from "@/components/bellas/admin/AdminGuide";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface PendingModel {
@@ -119,9 +120,12 @@ export function AdminDashboard() {
   const [pendingPhotos, setPendingPhotos] = useState<PendingPhoto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [expandedModel, setExpandedModel] = useState<string | null>(null);
+  const [guideOpen, setGuideOpen] = useState(false);
 
   useEffect(() => {
     fetchData();
+    // Mostrar guía automáticamente la primera vez
+    if (!hasSeenGuide()) setGuideOpen(true);
   }, []);
 
   const fetchData = async () => {
@@ -583,6 +587,9 @@ export function AdminDashboard() {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Guía de usuario — se abre automáticamente la primera vez */}
+      <AdminGuide open={guideOpen} onOpenChange={setGuideOpen} />
     </div>
   );
 }

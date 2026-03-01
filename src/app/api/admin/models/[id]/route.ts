@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
 import { adminProfileUpdateSchema } from "@/lib/admin-validations";
+import { slugify } from "@/lib/slugify";
 import { z } from "zod";
 
 // GET /api/admin/models/[id] — Obtener detalle completo de un modelo
@@ -84,6 +85,16 @@ export async function PUT(
             updateData.birthDate = new Date(validatedData.birthDate);
         }
 
+        // Generar slug si se actualió el nombre artístico
+        if (validatedData.artisticName) {
+            const baseSlug = slugify(validatedData.artisticName);
+            // Verificar unicidad del slug excluyendo el perfil actual
+            const existing = await db.profile.findFirst({
+                where: { slug: baseSlug, NOT: { id } },
+            });
+            updateData.slug = existing ? `${baseSlug}-${id.slice(-6)}` : baseSlug;
+        }
+
         // Limpiar campos vacíos (strings vacíos → null)
         for (const key of Object.keys(updateData)) {
             if (updateData[key] === "") {
@@ -121,6 +132,58 @@ export async function PUT(
         console.error("Admin update model error:", error);
         return NextResponse.json(
             { error: "Error al actualizar modelo" },
+            { status: 500 }
+        );
+    }
+}
+
+// DELETE /api/admin/models/[id] — Eliminar modelo completo (perfil + fotos + cuenta)
+export async function DELETE(
+    request: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    try {
+        const admin = await requireAdmin(request);
+        if (!admin) {
+            return NextResponse.json({ error: "No autorizado" }, { status: 403 });
+        }
+
+        const { id } = await params;
+
+        // Obtener perfil con fotos y usuario
+        const profile = await db.profile.findUnique({
+            where: { id },
+            include: {
+                photos: { select: { filename: true } },
+                user: { select: { id: true } },
+            },
+        });
+
+        if (!profile) {
+            return NextResponse.json({ error: "Perfil no encontrado" }, { status: 404 });
+        }
+
+        // Eliminar archivos físicos del volumen
+        const { unlink } = await import("fs/promises");
+        const path = await import("path");
+        for (const photo of profile.photos) {
+            if (photo.filename) {
+                try {
+                    await unlink(path.join(process.cwd(), "public", "uploads", photo.filename));
+                } catch {
+                    // Ignorar archivo no encontrado
+                }
+            }
+        }
+
+        // Eliminar usuario (cascade en Prisma elimina profile, photos, sessions)
+        await db.user.delete({ where: { id: profile.userId } });
+
+        return NextResponse.json({ success: true });
+    } catch (error) {
+        console.error("Admin delete model error:", error);
+        return NextResponse.json(
+            { error: "Error al eliminar modelo" },
             { status: 500 }
         );
     }

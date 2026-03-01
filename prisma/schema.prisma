@@ -59,6 +59,7 @@ model Profile {
   user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   
   // Información Personal
+  slug            String?       @unique // URL amigable (generado desde artisticName)
   artisticName    String?       // Nombre artístico
   bio             String?       // Biografía
   birthDate       DateTime?     // Fecha de nacimiento

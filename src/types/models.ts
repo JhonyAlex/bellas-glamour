@@ -15,6 +15,7 @@ export interface ModelUser {
 
 export interface Model {
   id: string;
+  slug?: string | null;
   artisticName: string | null;
   bio: string | null;
   height: number | null;
@@ -29,6 +30,9 @@ export interface Model {
   skills?: string | null;
   location: string | null;
   nationality?: string | null;
+  experience?: string | null;
+  specialties?: string | null;
+  availability?: string | null;
   instagram?: string | null;
   twitter?: string | null;
   tiktok?: string | null;

@@ -4,7 +4,7 @@ import { useState, useMemo, useCallback, useEffect } from "react";
 import NextImage from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-    Search, Users, Eye, Edit, Image, ChevronLeft, ChevronRight,
+    Search, Users, Eye, Image, ChevronLeft, ChevronRight,
     ChevronsLeft, ChevronsRight, ArrowUpDown, ArrowUp, ArrowDown,
     SlidersHorizontal, X,
 } from "lucide-react";
@@ -235,9 +235,6 @@ export function AdminModelsTable({
                                     Registro <SortIcon column="createdAt" />
                                 </span>
                             </th>
-                            <th className="text-right py-3 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Acciones
-                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -249,7 +246,9 @@ export function AdminModelsTable({
                                     animate={{ opacity: 1 }}
                                     exit={{ opacity: 0 }}
                                     transition={{ delay: idx * 0.03 }}
-                                    className="border-b border-gold-500/5 hover:bg-gold-500/5 transition-colors"
+                                    className="border-b border-gold-500/5 hover:bg-gold-500/5 transition-colors cursor-pointer"
+                                    onClick={() => onViewGallery(model.id)}
+                                    title="Clic para gestionar modelo"
                                 >
                                     {/* Modelo info */}
                                     <td className="py-3 px-4">
@@ -330,30 +329,6 @@ export function AdminModelsTable({
                                             })}
                                         </span>
                                     </td>
-
-                                    {/* Acciones */}
-                                    <td className="py-3 px-4 text-right">
-                                        <div className="flex items-center justify-end gap-1">
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                className="h-8 w-8 text-gray-400 hover:text-gold-400"
-                                                onClick={() => onEdit(model.id)}
-                                                title="Editar perfil"
-                                            >
-                                                <Edit className="w-4 h-4" />
-                                            </Button>
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                className="h-8 w-8 text-gray-400 hover:text-gold-400"
-                                                onClick={() => onViewGallery(model.id)}
-                                                title="Ver galería"
-                                            >
-                                                <Image className="w-4 h-4" />
-                                            </Button>
-                                        </div>
-                                    </td>
                                 </motion.tr>
                             ))}
                         </AnimatePresence>
@@ -378,7 +353,8 @@ export function AdminModelsTable({
                         key={model.id}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="bg-card border border-gold-500/10 rounded-lg p-4 space-y-3"
+                        className="bg-card border border-gold-500/10 rounded-lg p-4 space-y-3 cursor-pointer hover:border-gold-500/30 transition-colors"
+                        onClick={() => onViewGallery(model.id)}
                     >
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3 min-w-0">
@@ -414,8 +390,7 @@ export function AdminModelsTable({
                         {/* Fotos Preview Mobile */}
                         {model.photos && model.photos.length > 0 && (
                             <div
-                                className="flex gap-1.5 overflow-x-auto pb-1 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-none cursor-pointer"
-                                onClick={() => onViewGallery(model.id)}
+                                className="flex gap-1.5 overflow-x-auto pb-1 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-none"
                             >
                                 {model.photos.map((photo) => (
                                     <div key={photo.id} className="relative w-16 h-16 rounded-md bg-gold-500/10 overflow-hidden flex-shrink-0">
@@ -430,23 +405,8 @@ export function AdminModelsTable({
                             </div>
                         )}
 
-                        <div className="flex gap-2 pt-1 border-t border-gold-500/10">
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                className="flex-1 border-gold-500/20 text-gray-300 h-8 text-xs"
-                                onClick={() => onEdit(model.id)}
-                            >
-                                <Edit className="w-3.5 h-3.5 mr-1" /> Editar
-                            </Button>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                className="flex-1 border-gold-500/20 text-gray-300 h-8 text-xs"
-                                onClick={() => onViewGallery(model.id)}
-                            >
-                                <Image className="w-3.5 h-3.5 mr-1" /> Galería
-                            </Button>
+                        <div className="pt-1 border-t border-gold-500/10">
+                            <p className="text-xs text-gray-500 text-center">Clic para gestionar</p>
                         </div>
                     </motion.div>
                 ))}

@@ -9,6 +9,7 @@ import { useState } from "react";
 interface ModelCardProps {
   model: {
     id: string;
+    slug?: string | null;
     artisticName: string | null;
     bio: string | null;
     height: number | null;
@@ -50,7 +51,7 @@ export function ModelCard({ model, index = 0 }: ModelCardProps) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <Link href={`/modelos/${model.id}`}>
+      <Link href={`/modelos/${model.slug ?? model.id}`}>
         {/* Card Container */}
         <div className="relative aspect-[3/4] overflow-hidden rounded-sm bg-gray-900">
           {/* Image */}

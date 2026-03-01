@@ -3,12 +3,14 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Home, LogOut, Crown, User } from "lucide-react";
+import { Home, LogOut, Crown, User, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/store/authStore";
+import { AdminGuide } from "./admin/AdminGuide";
 
 export function AdminNavbar() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [guideOpen, setGuideOpen] = useState(false);
   const { user, logout } = useAuthStore();
 
   useEffect(() => {
@@ -30,6 +32,7 @@ export function AdminNavbar() {
   };
 
   return (
+    <>
     <motion.nav
       initial={{ y: -100 }}
       animate={{ y: 0 }}
@@ -59,6 +62,17 @@ export function AdminNavbar() {
 
           {/* Actions */}
           <div className="flex items-center space-x-4">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setGuideOpen(true)}
+              className="text-gray-400 hover:text-gold-400 border border-gold-500/20 hover:border-gold-500/40"
+              title="Abrir guía de usuario"
+            >
+              <BookOpen className="w-4 h-4 mr-2" />
+              <span className="hidden sm:inline">Guía</span>
+            </Button>
+
             <Link href="/">
               <Button
                 variant="outline"
@@ -87,5 +101,8 @@ export function AdminNavbar() {
         </div>
       </div>
     </motion.nav>
+
+      <AdminGuide open={guideOpen} onOpenChange={setGuideOpen} />
+    </>
   );
 }
